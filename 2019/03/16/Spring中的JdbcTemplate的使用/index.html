@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,JdbcTemplate,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在最近的一个工作中，为了简单方便我就是用了Spring自带的JdbcTemplate来访问数据库，我以为之前自己很熟练的掌握，后来才发现我太天真了，踩了很多坑。">
+<meta name="keywords" content="Spring,JdbcTemplate">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring中的JdbcTemplate的使用">
+<meta property="og:url" content="http://yoursite.com/2019/03/16/Spring中的JdbcTemplate的使用/index.html">
+<meta property="og:site_name" content="梦起飞">
+<meta property="og:description" content="在最近的一个工作中，为了简单方便我就是用了Spring自带的JdbcTemplate来访问数据库，我以为之前自己很熟练的掌握，后来才发现我太天真了，踩了很多坑。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-06-12T07:59:09.690Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring中的JdbcTemplate的使用">
+<meta name="twitter:description" content="在最近的一个工作中，为了简单方便我就是用了Spring自带的JdbcTemplate来访问数据库，我以为之前自己很熟练的掌握，后来才发现我太天真了，踩了很多坑。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/03/16/Spring中的JdbcTemplate的使用/">
+
+
+
+
+
+  <title>Spring中的JdbcTemplate的使用 | 梦起飞</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梦起飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天行健，君子以自强不息</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/16/Spring中的JdbcTemplate的使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="枫叶梨花">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梦起飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring中的JdbcTemplate的使用</h1>
+        
+
+        <div class="post-meta">
+			
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-16T20:33:22+08:00">
+                2019-03-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java框架/" itemprop="url" rel="index">
+                    <span itemprop="name">Java框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,023
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在最近的一个工作中，为了简单方便我就是用了Spring自带的JdbcTemplate来访问数据库，我以为之前自己很熟练的掌握，后来才发现我太天真了，踩了很多坑。<br><a id="more"></a></p>
+<h3 id="基本方法"><a href="#基本方法" class="headerlink" title="基本方法"></a>基本方法</h3><p>JdbcTemplate自带很多方法可以执行SQL语句,以下我主要列举，比较常用的方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">//执行SQL，返回一个对象</span><br><span class="line">@Override</span><br><span class="line">public &lt;T&gt; T queryForObject(String sql, RowMapper&lt;T&gt; rowMapper, Object... args)</span><br><span class="line">		 throws DataAccessException &#123;</span><br><span class="line">	List&lt;T&gt; results = query(sql, args, </span><br><span class="line">			new RowMapperResultSetExtractor&lt;T&gt;(rowMapper, 1));</span><br><span class="line">	return DataAccessUtils.requiredSingleResult(results);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//同上，不过多要传入返回值的对象的Class</span><br><span class="line">@Override</span><br><span class="line">public &lt;T&gt; T queryForObject(String sql, Class&lt;T&gt; requiredType)</span><br><span class="line">		 throws DataAccessException &#123;</span><br><span class="line">	return queryForObject(sql, getSingleColumnRowMapper(requiredType));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//执行SQL，返回一个Map对象</span><br><span class="line">@Override</span><br><span class="line">public Map&lt;String, Object&gt; queryForMap(String sql, Object... args)</span><br><span class="line">		 throws DataAccessException &#123;</span><br><span class="line">	return queryForObject(sql, args, getColumnMapRowMapper());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//执行SQL，返回一个List对象</span><br><span class="line">@Override</span><br><span class="line">public &lt;T&gt; List&lt;T&gt; query(String sql, Object[] args, RowMapper&lt;T&gt; rowMapper) </span><br><span class="line">		throws DataAccessException &#123;</span><br><span class="line">	return query(sql, args, new RowMapperResultSetExtractor&lt;T&gt;(rowMapper));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//执行SQL，返回一个List对象</span><br><span class="line">@Override</span><br><span class="line">@Override</span><br><span class="line">public &lt;T&gt; List&lt;T&gt; queryForList(String sql, Class&lt;T&gt; elementType, Object... args)</span><br><span class="line">	throws DataAccessException &#123;</span><br><span class="line">	return query(sql, args, getSingleColumnRowMapper(elementType));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//执行一条SQL，主要用于更新、新增数据</span><br><span class="line">@Override</span><br><span class="line">public int update(String sql, Object... args) throws DataAccessException &#123;</span><br><span class="line">	return update(sql, newArgPreparedStatementSetter(args));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//执行SQL，返回一个List对象，List里是Map对象</span><br><span class="line">@Override</span><br><span class="line">public List&lt;Map&lt;String, Object&gt;&gt; queryForList(String sql, Object... args) </span><br><span class="line">		throws DataAccessException &#123;</span><br><span class="line">	return query(sql, args, getColumnMapRowMapper());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h3><h4 id="至少返回一个对象"><a href="#至少返回一个对象" class="headerlink" title="至少返回一个对象"></a>至少返回一个对象</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public &lt;T&gt; T queryForObject(String sql, RowMapper&lt;T&gt; rowMapper, Object... args)</span><br><span class="line">		 throws DataAccessException &#123;</span><br><span class="line">	List&lt;T&gt; results = query(sql, args, </span><br><span class="line">			new RowMapperResultSetExtractor&lt;T&gt;(rowMapper, 1));</span><br><span class="line">	return DataAccessUtils.requiredSingleResult(results);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public RowMapperResultSetExtractor(RowMapper&lt;T&gt; rowMapper, int rowsExpected) &#123;</span><br><span class="line">	Assert.notNull(rowMapper, &quot;RowMapper is required&quot;);</span><br><span class="line">	this.rowMapper = rowMapper;</span><br><span class="line">	this.rowsExpected = rowsExpected;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上代码就是可以知道，必须返回一个对象，不能返回null，如果从数据库查找发现没有一条信息吻合就会报错，报以下的错误</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">org.springframework.dao.IncorrectResultSizeDataAccessException: Incorrect result size: expected 1, actual 0</span><br></pre></td></tr></table></figure>
+<p>所以如果不确定是否有信息，就使用<code>query</code>、<code>queryForList</code>来避免错误。返回单对象一般会有这样的限制，如果自己不确定可以使用该方法的时候看一下源码，设置了1就代表必须要有一个值。</p>
+<h4 id="返回指定对象"><a href="#返回指定对象" class="headerlink" title="返回指定对象"></a>返回指定对象</h4><p><code>JdbcTemplate</code>里面这样的方法，就是可以传入了一个对象的<code>Class</code>值，就可以返回该对象的值，但是需要注意，它只支持基础类型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//例如，它支持以下的写法</span><br><span class="line">public Integer getCourseCount(String sql)&#123;</span><br><span class="line">	return (Integer) jdbcTemplate.queryForObject(sql,java.lang.Integer.class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过源代码发现<code>Class&lt;T&gt; requiredType</code>这个参数支持以下类型，源代码就是从<code>primitiveWrapperTypeMap</code>查找是否是一下类型：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">primitiveWrapperTypeMap.put(Boolean.class, boolean.class);</span><br><span class="line">primitiveWrapperTypeMap.put(Byte.class, byte.class);</span><br><span class="line">primitiveWrapperTypeMap.put(Character.class, char.class);</span><br><span class="line">primitiveWrapperTypeMap.put(Double.class, double.class);</span><br><span class="line">primitiveWrapperTypeMap.put(Float.class, float.class);</span><br><span class="line">primitiveWrapperTypeMap.put(Integer.class, int.class);</span><br><span class="line">primitiveWrapperTypeMap.put(Long.class, long.class);</span><br><span class="line">primitiveWrapperTypeMap.put(Short.class, short.class);</span><br></pre></td></tr></table></figure>
+<p>如果需要返回自定义对象就需要另外的方法:</p>
+<p>如果返回<code>List&lt;T&gt;</code>,就如以下的案例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;Course&gt; getCourseList(String sql)&#123;</span><br><span class="line">	return jdbcTemplate.query(sql,new RowMapper&lt;Course&gt;()&#123;</span><br><span class="line">		@Override</span><br><span class="line">		public Course mapRow(ResultSet rs, int rowNum) throws SQLException &#123;</span><br><span class="line">			Integer id=rs.getInt(&quot;id&quot;);</span><br><span class="line">			String coursename=rs.getString(&quot;coursename&quot;);</span><br><span class="line">			//把数据封装到对象里</span><br><span class="line">			Course course=new Course();</span><br><span class="line">			course.setId(id);</span><br><span class="line">			course.setCoursename(coursename.trim());</span><br><span class="line">			return course;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>或者使用<code>List&lt;Map&lt;String,Object&gt;&gt;</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public List&lt;MyScoreDto&gt; listMyScore(Integer studentId) &#123;</span><br><span class="line">  String sql = &quot;select g.score,c.className from grade g&quot;</span><br><span class="line">      + &quot; left join teacher t on t.id=g.teacherId&quot;</span><br><span class="line">      + &quot; left join student s on s.id=g.studentId&quot;</span><br><span class="line">      + &quot; left join classname c on c.id=t.classNameId&quot;</span><br><span class="line">      + &quot; where s.id=&quot;+studentId;</span><br><span class="line">  List&lt;Map&lt;String,Object&gt;&gt; list = jdbcTemplate.queryForList(sql);</span><br><span class="line">  if(list!=null &amp;&amp; list.size()&gt;0)&#123;</span><br><span class="line">    List&lt;MyScoreDto&gt; ls = new ArrayList&lt;MyScoreDto&gt;();</span><br><span class="line">    for(int i=0;i&lt;list.size();i++)&#123;</span><br><span class="line">      MyScoreDto c = new MyScoreDto();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">          BeanUtils.populate(c, list.get(i));</span><br><span class="line">        &#125; catch (IllegalAccessException | InvocationTargetException e) &#123;</span><br><span class="line">          e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">      ls.add(c);</span><br><span class="line">    &#125;</span><br><span class="line">    return ls;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用了<code>org.apache.commons.beanutils.BeanUtils</code>把Map对象转换为自定义对象。</p>
+<p>后来为了方便起见我还自己写了一个<code>RowMapper</code>,来简化操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">import java.lang.reflect.Field;</span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line">import java.sql.ResultSet;</span><br><span class="line"></span><br><span class="line">import org.springframework.jdbc.core.RowMapper;</span><br><span class="line"></span><br><span class="line">import com.lsb.exam.utils.StringUtils;</span><br><span class="line"></span><br><span class="line">public class MyRowMapper&lt;T&gt; implements RowMapper&lt;T&gt; &#123;</span><br><span class="line"></span><br><span class="line">	Class&lt;T&gt; cls;</span><br><span class="line"></span><br><span class="line">	public MyRowMapper(Class&lt;T&gt; cls) &#123;</span><br><span class="line">		this.cls = cls;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public T mapRow(ResultSet rs, int rowNum) &#123;</span><br><span class="line">		try &#123;</span><br><span class="line">			Field[] fields = cls.getDeclaredFields();</span><br><span class="line"></span><br><span class="line">			T obj = cls.newInstance();</span><br><span class="line"></span><br><span class="line">			// 获取所有的属性</span><br><span class="line">			for (Field field : fields) &#123;</span><br><span class="line">				field.setAccessible(true);</span><br><span class="line">				if (field.getGenericType().toString().equals(&quot;class java.lang.Integer&quot;)) &#123;</span><br><span class="line">					Method m = obj.getClass().getDeclaredMethod(</span><br><span class="line">							&quot;set&quot; + StringUtils.firstChar2UpperCase(field.getName()), java.lang.Integer.class);</span><br><span class="line"></span><br><span class="line">					m.invoke(obj, rs.getInt(field.getName()));</span><br><span class="line">				&#125;</span><br><span class="line">				if (field.getGenericType().toString().equals(&quot;class java.lang.String&quot;)) &#123;</span><br><span class="line">					Method m = obj.getClass().getDeclaredMethod(</span><br><span class="line">							&quot;set&quot; + StringUtils.firstChar2UpperCase(field.getName()), java.lang.String.class);</span><br><span class="line">					m.invoke(obj, rs.getString(field.getName()));</span><br><span class="line">				&#125;</span><br><span class="line">				if (field.getGenericType().toString().equals(&quot;class java.util.Date&quot;)) &#123;</span><br><span class="line">					Method m = obj.getClass().getDeclaredMethod(</span><br><span class="line">							&quot;set&quot; + StringUtils.firstChar2UpperCase(field.getName()), java.util.Date.class);</span><br><span class="line">					m.invoke(obj, rs.getDate(field.getName()));</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			return obj;</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">			return null;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面有一个错误，就是如果对象继承了父类，就无法将值注入到父类的的属性中，因为<code>cls.getDeclaredFields()</code>无法获取父类的属性，所以我又改了一种方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">import java.lang.reflect.Field;</span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line">import java.sql.ResultSet;</span><br><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.Arrays;</span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">import org.springframework.jdbc.core.RowMapper;</span><br><span class="line"></span><br><span class="line">import com.lsb.exam.utils.StringUtils;</span><br><span class="line"></span><br><span class="line">public class MyRowMapper&lt;T&gt; implements RowMapper&lt;T&gt; &#123;</span><br><span class="line"></span><br><span class="line">	Class&lt;T&gt; cls;</span><br><span class="line"></span><br><span class="line">	public MyRowMapper(Class&lt;T&gt; cls) &#123;</span><br><span class="line">		this.cls = cls;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public T mapRow(ResultSet rs, int rowNum) &#123;</span><br><span class="line">		try &#123;</span><br><span class="line"></span><br><span class="line">			T obj = cls.newInstance();</span><br><span class="line">			</span><br><span class="line">			//这个只能获取当前类的共有私有字段</span><br><span class="line">			//Field[] fields = cls.getDeclaredFields();</span><br><span class="line">			List&lt;Field&gt; list = new ArrayList&lt;&gt;();</span><br><span class="line">			</span><br><span class="line">			Class&lt;?&gt; c = cls;</span><br><span class="line">			</span><br><span class="line">			//循环获取</span><br><span class="line">			while(c != null)&#123;</span><br><span class="line">				list.addAll(Arrays.asList(c.getDeclaredFields()));</span><br><span class="line">				c = c.getSuperclass();</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">			// 获取所有的属性</span><br><span class="line">			for (Field field : list) &#123;</span><br><span class="line">				field.setAccessible(true);</span><br><span class="line">				if (field.getGenericType().toString().equals(&quot;class java.lang.Integer&quot;)) &#123;</span><br><span class="line">					Method m = obj.getClass().getMethod(</span><br><span class="line">							&quot;set&quot; + StringUtils.firstChar2UpperCase(field.getName()), java.lang.Integer.class);</span><br><span class="line"></span><br><span class="line">					m.invoke(obj, rs.getInt(field.getName()));</span><br><span class="line">				&#125;</span><br><span class="line">				if (field.getGenericType().toString().equals(&quot;class java.lang.String&quot;)) &#123;</span><br><span class="line">					Method m = obj.getClass().getMethod(</span><br><span class="line">							&quot;set&quot; + StringUtils.firstChar2UpperCase(field.getName()), java.lang.String.class);</span><br><span class="line">					m.invoke(obj, rs.getString(field.getName()));</span><br><span class="line">				&#125;</span><br><span class="line">				if (field.getGenericType().toString().equals(&quot;class java.util.Date&quot;)) &#123;</span><br><span class="line">					Method m = obj.getClass().getMethod(</span><br><span class="line">							&quot;set&quot; + StringUtils.firstChar2UpperCase(field.getName()), java.util.Date.class);</span><br><span class="line">					m.invoke(obj, rs.getDate(field.getName()));</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			return obj;</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">			return null;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>感觉我自己写的很麻烦，目前实力受限，感觉就只能如此编码，等我以后水平上去，再看看能不能精简代码。</p>
+<p>其实过程中，有一个反射的知识很重要，关于方法的介绍:</p>
+<p>1、获取class</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>object.getClass()</td>
+<td>获取这个实例所属的class对象</td>
+</tr>
+<tr>
+<td>T.class</td>
+<td>通过类型获取所属class对象</td>
+</tr>
+<tr>
+<td>Class.forName()</td>
+<td>通过类路径获取class对象</td>
+</tr>
+<tr>
+<td>Class.getSuperclass()</td>
+<td>获取父类的class对象</td>
+</tr>
+<tr>
+<td>Class.getClasses()</td>
+<td>获取类内所有的公开的类，接口，枚举成员，以及它继承的成员（特指类）</td>
+</tr>
+<tr>
+<td>Class.getDeclaredClasses()</td>
+<td>通过类内显示声明的类，接口</td>
+</tr>
+<tr>
+<td>Class.getEnclosingClass()</td>
+<td>获取闭包类</td>
+</tr>
+</tbody>
+</table>
+<p>2、获取属性</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>getDeclaredField(String name)</td>
+<td>获取指定字段(公有，私有)，不包括父类字段</td>
+</tr>
+<tr>
+<td>getField(String name)</td>
+<td>获取指定字段（公有），包括父类字段</td>
+</tr>
+<tr>
+<td>getDelaredFields()</td>
+<td>获取所有类内显示声明的字段(公有，私有)，不包括父类字段</td>
+</tr>
+<tr>
+<td>getFields()</td>
+<td>获取所有字段（公有），包括父类字段</td>
+</tr>
+</tbody>
+</table>
+<p>3、获取方法</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>getDeclaredMethod(String name, Class&lt;?&gt; .. paramType)</td>
+<td>获取指定方法（公有，私有），不包括父类方法</td>
+</tr>
+<tr>
+<td>getMethod(String name, Class&lt;?&gt; .. paramType)</td>
+<td>获取指定方法（公有），包括父类方法</td>
+</tr>
+<tr>
+<td>getDeclaredMethods()</td>
+<td>获取所有声明方法（公有，私有），不包括父类方法</td>
+</tr>
+<tr>
+<td>getMethods()</td>
+<td>获取所有方法（公有），包括父类方法</td>
+</tr>
+</tbody>
+</table>
+<p>上面的信息可以访问<a href="https://docs.oracle.com/javase/tutorial/reflect/class/classMembers.html" target="_blank" rel="noopener">Oracle网站的反射信息</a>。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这次我发现其实我的编码能力很差，感觉很多东西都只是茫茫然，不清不楚，当时写的时候各种问题，幸好最后克服了，但是还是显露了自己实力太差的缺点，还是要继续努力学习啊。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"><i class="fa fa-tag"></i> Spring</a>
+          
+            <a href="/tags/JdbcTemplate/" rel="tag"><i class="fa fa-tag"></i> JdbcTemplate</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/26/Windows下bat的小应用/" rel="next" title="Windows下bat的小应用">
+                <i class="fa fa-chevron-left"></i> Windows下bat的小应用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/26/SpringCloud中的Eureka的集群配置/" rel="prev" title="SpringCloud中的Eureka的集群配置">
+                SpringCloud中的Eureka的集群配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">枫叶梨花</p>
+              <p class="site-description motion-element" itemprop="description">正在努力提高技术的小码农</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/user/5839013461ff4b007ec2d4c4/posts?sort=popular" title="枫叶梨花" target="_blank">枫叶梨花</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本方法"><span class="nav-number">1.</span> <span class="nav-text">基本方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注意点"><span class="nav-number">2.</span> <span class="nav-text">注意点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#至少返回一个对象"><span class="nav-number">2.1.</span> <span class="nav-text">至少返回一个对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回指定对象"><span class="nav-number">2.2.</span> <span class="nav-text">返回指定对象</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫叶梨花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">88.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

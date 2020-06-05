@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="bat,批处理,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="最近我使用Maven的时候会出现下载jar包不成功的现象，然后需要把它删除然后重新下载，但是有时候文件过多，一个个删除太花费时间，所以用bat的批处理会很舒服。">
+<meta name="keywords" content="bat,批处理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows下bat的小应用">
+<meta property="og:url" content="http://yoursite.com/2019/01/26/Windows下bat的小应用/index.html">
+<meta property="og:site_name" content="梦起飞">
+<meta property="og:description" content="最近我使用Maven的时候会出现下载jar包不成功的现象，然后需要把它删除然后重新下载，但是有时候文件过多，一个个删除太花费时间，所以用bat的批处理会很舒服。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-01-26T14:24:20.755Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Windows下bat的小应用">
+<meta name="twitter:description" content="最近我使用Maven的时候会出现下载jar包不成功的现象，然后需要把它删除然后重新下载，但是有时候文件过多，一个个删除太花费时间，所以用bat的批处理会很舒服。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/26/Windows下bat的小应用/">
+
+
+
+
+
+  <title>Windows下bat的小应用 | 梦起飞</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梦起飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天行健，君子以自强不息</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/26/Windows下bat的小应用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="枫叶梨花">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梦起飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Windows下bat的小应用</h1>
+        
+
+        <div class="post-meta">
+			
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-26T21:17:01+08:00">
+                2019-01-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Windows/" itemprop="url" rel="index">
+                    <span itemprop="name">Windows</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,073
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近我使用Maven的时候会出现下载jar包不成功的现象，然后需要把它删除然后重新下载，但是有时候文件过多，一个个删除太花费时间，所以用bat的批处理会很舒服。<br><a id="more"></a></p>
+<p>bat的语法我之前没遇到过，然后我是边学习边试验，写出了一个简陋版的批处理文件。</p>
+<p>我的思路是：</p>
+<ul>
+<li>1、遍历目标文件夹。</li>
+<li>2、找到目标文件后，删除该文件夹(通过观察下载失败的jar可知，当出现sha1-in-progress后缀的文件时，即该文件下载失败)。</li>
+</ul>
+<blockquote>
+<p>很多知识我都是从<a href="https://www.cnblogs.com/dasusu/p/9058554.html" target="_blank" rel="noopener">写个批处理脚本来帮忙干活–遍历文件夹&amp;字符串处理</a>这篇博客中学习到，非常感谢分享。</p>
+</blockquote>
+<h3 id="遍历文件夹"><a href="#遍历文件夹" class="headerlink" title="遍历文件夹"></a>遍历文件夹</h3><p>for循环即可遍历文件夹</p>
+<p>命令：<code>for [参数] %%变量名 in (匹配符) do (执行的命令)</code></p>
+<p>参数可以分为<code>/d,/r,/l,/f,无参</code></p>
+<ul>
+<li>无参 : 遍历当前文件夹下的文件</li>
+<li>/d : 遍历当前文件夹下的子文件夹</li>
+<li>/r : 深度遍历当前文件夹下的所有文件</li>
+<li>/l : 迭代数值范围，使用迭代变量设置起始值，然后逐步执行一组范围的值，直到该值超过所设置的终止值</li>
+<li>/f : 用于解析文件内容</li>
+</ul>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">for /r C:\Users\Panlf\.m2\repository %%i in (*.sha1-in-progress) do (</span><br><span class="line">	echo %%i</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p>上述的意思深度遍历<code>C:\Users\Panlf\.m2\repository</code>文件下的所有文件，找出文件后缀名为<code>sha1-in-progress</code>的文件并打印。</p>
+<p>当然也可以输出到文件中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">for /r C:\Users\Panlf\.m2\repository %%i in (*.sha1-in-progress) do (</span><br><span class="line">	echo %%i &gt;&gt; E:\m.txt</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p>可以将结果输出到<code>E</code>盘的<code>m.txt</code>文件中，注意不能使用<code>&gt;</code>，不然只会输出一个结果到文件中，必须使用<code>&gt;&gt;</code>。</p>
+<h3 id="删除文件夹"><a href="#删除文件夹" class="headerlink" title="删除文件夹"></a>删除文件夹</h3><p>上面是遍历文件，现在要删除文件夹。</p>
+<p>bat删除有两个命令rd、del。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">命令：rd，删除目录 </span><br><span class="line"></span><br><span class="line">参数：/s</span><br><span class="line">说明：用于删除目录树，即删除目录及目录下的所有子目录和文件。 </span><br><span class="line"></span><br><span class="line">参数：/q XP中的增强DOS命令 </span><br><span class="line">说明：进行删除操作时将取消确认。 </span><br><span class="line"></span><br><span class="line">命令：del，删除文件或目录 </span><br><span class="line">参数：/f </span><br><span class="line">说明：使用此参数可删除只读文件。 </span><br><span class="line"></span><br><span class="line">参数：/s、/q</span><br><span class="line">说明：即删除目录及目录下的所有子目录和文件。同时使用参数/Q，可取消删除操作时的系统确认。 </span><br><span class="line"></span><br><span class="line">参数：/a </span><br><span class="line">说明：删除指定属性或指定属性以外的文件，/AR、/AH、/AS、/AA表示删除只读、隐藏、系统、存档文件，</span><br><span class="line">/A-R、/A-H、/A-S、/A-A表示删除除只读、隐藏、系统、存档以外的文件。</span><br></pre></td></tr></table></figure>
+<p>最后我完成一个简陋版：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@echo off</span><br><span class="line">setlocal enabledelayedexpansion</span><br><span class="line">set /p input_path=请输入要要操作的文件夹:</span><br><span class="line">echo 获取到的地址:%input_path%</span><br><span class="line">for /r %input_path% %%i in (*.sha1-in-progress) do (</span><br><span class="line">	set pan_name=%%~di</span><br><span class="line">	set del_name=%%~pi</span><br><span class="line">	set true_name=!pan_name!!del_name!</span><br><span class="line">	echo !true_name!</span><br><span class="line">	rd /s /q !true_name!</span><br><span class="line">)</span><br><span class="line">pause</span><br></pre></td></tr></table></figure></p>
+<h4 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h4><p>1、<code>%%i</code>根据不同的<code>for</code>使用方式，内容也有所不同:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">%%~fi：表示获取该文件的绝对路径信息</span><br><span class="line">%%~di：表示获取该文件所在的盘符</span><br><span class="line">%%~pi：表示获取该文件的路径，不包含盘符的信息</span><br><span class="line">%%~ni：表示获取该文件的文件名，不包含扩展名信息</span><br><span class="line">%%~xi：表示获取该文件的扩展名</span><br><span class="line">%%~ti：表示获取该文件的上次修改时间</span><br><span class="line">%%~zi：表示获取该文件的大小</span><br></pre></td></tr></table></figure></p>
+<p>2、在for循环中定义中临时变量的时候<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">在for循环定义set pan_name=%%~di，如果直接echo pan_name会报echo关闭状态，不能使用。</span><br><span class="line">所以需要第一启用变量延迟功能：setlocal enabledelayedexpansion，第二调用变量的时候使用!pan_name!</span><br></pre></td></tr></table></figure></p>
+<p>3、字符串拼接<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set true_name=!pan_name!!del_name!</span><br></pre></td></tr></table></figure></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这一次实现的功能是一次不错的体验，自己从完全不懂，慢慢学习实现功能，学到很多。虽然知识点很简单，但是发现学完之后很多东西变得很简单，技术简化生活。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/bat/" rel="tag"><i class="fa fa-tag"></i> bat</a>
+          
+            <a href="/tags/批处理/" rel="tag"><i class="fa fa-tag"></i> 批处理</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/18/SpringBoot下使用自定义事件/" rel="next" title="SpringBoot下使用自定义事件">
+                <i class="fa fa-chevron-left"></i> SpringBoot下使用自定义事件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/16/Spring中的JdbcTemplate的使用/" rel="prev" title="Spring中的JdbcTemplate的使用">
+                Spring中的JdbcTemplate的使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">枫叶梨花</p>
+              <p class="site-description motion-element" itemprop="description">正在努力提高技术的小码农</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/user/5839013461ff4b007ec2d4c4/posts?sort=popular" title="枫叶梨花" target="_blank">枫叶梨花</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#遍历文件夹"><span class="nav-number">1.</span> <span class="nav-text">遍历文件夹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除文件夹"><span class="nav-number">2.</span> <span class="nav-text">删除文件夹</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#注意"><span class="nav-number">2.1.</span> <span class="nav-text">注意</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫叶梨花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">88.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

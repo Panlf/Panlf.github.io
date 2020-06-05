@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="MongoDB,非关系数据库,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="大数据量使用全集合查询，这是非常影响性能的，而索引可以加快查询效率，提高性能，所以这方面的知识也是必不可少的。">
+<meta name="keywords" content="MongoDB,非关系数据库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB之索引">
+<meta property="og:url" content="http://yoursite.com/2018/05/08/MongoDB之索引/index.html">
+<meta property="og:site_name" content="梦起飞">
+<meta property="og:description" content="大数据量使用全集合查询，这是非常影响性能的，而索引可以加快查询效率，提高性能，所以这方面的知识也是必不可少的。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-05-08T03:06:22.652Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MongoDB之索引">
+<meta name="twitter:description" content="大数据量使用全集合查询，这是非常影响性能的，而索引可以加快查询效率，提高性能，所以这方面的知识也是必不可少的。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/05/08/MongoDB之索引/">
+
+
+
+
+
+  <title>MongoDB之索引 | 梦起飞</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梦起飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天行健，君子以自强不息</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/08/MongoDB之索引/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="枫叶梨花">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梦起飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MongoDB之索引</h1>
+        
+
+        <div class="post-meta">
+			
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-08T08:27:34+08:00">
+                2018-05-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,556
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>大数据量使用全集合查询，这是非常影响性能的，而索引可以加快查询效率，提高性能，所以这方面的知识也是必不可少的。<br><a id="more"></a></p>
+<p>在总结索引之前，需要先了解关于<code>MongoDB</code>的查询分析。</p>
+<h3 id="查询分析"><a href="#查询分析" class="headerlink" title="查询分析"></a>查询分析</h3><p><code>explain()</code>可以帮助我们分析查询语句性能。</p>
+<h4 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.find(...).explain()</span><br></pre></td></tr></table></figure>
+<h4 id="案例及结果"><a href="#案例及结果" class="headerlink" title="案例及结果"></a>案例及结果</h4><h5 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.person.find(&#123;name:&quot;plf&quot;&#125;).explain()</span><br></pre></td></tr></table></figure>
+<h5 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">&quot;queryPlanner&quot; : &#123;</span><br><span class="line">	&quot;plannerVersion&quot; : 1,</span><br><span class="line">	&quot;namespace&quot; : &quot;test.person&quot;,</span><br><span class="line">	&quot;indexFilterSet&quot; : false,</span><br><span class="line">	&quot;parsedQuery&quot; : &#123;</span><br><span class="line">	        &quot;name&quot; : &#123;</span><br><span class="line">	                &quot;$eq&quot; : &quot;plf&quot;</span><br><span class="line">	        &#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;winningPlan&quot; : &#123;</span><br><span class="line">        &quot;stage&quot; : &quot;FETCH&quot;,</span><br><span class="line">        &quot;inputStage&quot; : &#123;</span><br><span class="line">            &quot;stage&quot; : &quot;IXSCAN&quot;,</span><br><span class="line">            &quot;keyPattern&quot; : &#123;</span><br><span class="line">                    &quot;name&quot; : 1</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;indexName&quot; : &quot;name_1&quot;,</span><br><span class="line">            &quot;isMultiKey&quot; : false,</span><br><span class="line">            &quot;multiKeyPaths&quot; : &#123;</span><br><span class="line">                    &quot;name&quot; : [ ]</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;isUnique&quot; : false,</span><br><span class="line">            &quot;isSparse&quot; : false,</span><br><span class="line">            &quot;isPartial&quot; : false,</span><br><span class="line">            &quot;indexVersion&quot; : 2,</span><br><span class="line">            &quot;direction&quot; : &quot;forward&quot;,</span><br><span class="line">            &quot;indexBounds&quot; : &#123;</span><br><span class="line">                    &quot;name&quot; : [</span><br><span class="line">                            &quot;[\&quot;plf\&quot;, \&quot;plf\&quot;]&quot;</span><br><span class="line">                    ]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;rejectedPlans&quot; : [ ]</span><br><span class="line">&#125;,</span><br><span class="line">&quot;executionStats&quot; : &#123;</span><br><span class="line">    &quot;executionSuccess&quot; : true,</span><br><span class="line">    &quot;nReturned&quot; : 1,</span><br><span class="line">    &quot;executionTimeMillis&quot; : 0,</span><br><span class="line">    &quot;totalKeysExamined&quot; : 1,</span><br><span class="line">    &quot;totalDocsExamined&quot; : 1,</span><br><span class="line">    &quot;executionStages&quot; : &#123;</span><br><span class="line">        &quot;stage&quot; : &quot;FETCH&quot;,</span><br><span class="line">        &quot;nReturned&quot; : 1,</span><br><span class="line">        &quot;executionTimeMillisEstimate&quot; : 0,</span><br><span class="line">        &quot;works&quot; : 2,</span><br><span class="line">        &quot;advanced&quot; : 1,</span><br><span class="line">        &quot;needTime&quot; : 0,</span><br><span class="line">        &quot;needYield&quot; : 0,</span><br><span class="line">        &quot;saveState&quot; : 0,</span><br><span class="line">        &quot;restoreState&quot; : 0,</span><br><span class="line">        &quot;isEOF&quot; : 1,</span><br><span class="line">        &quot;invalidates&quot; : 0,</span><br><span class="line">        &quot;docsExamined&quot; : 1,</span><br><span class="line">        &quot;alreadyHasObj&quot; : 0,</span><br><span class="line">        &quot;inputStage&quot; : &#123;</span><br><span class="line">            &quot;stage&quot; : &quot;IXSCAN&quot;,</span><br><span class="line">            &quot;nReturned&quot; : 1,</span><br><span class="line">            &quot;executionTimeMillisEstimate&quot; : 0,</span><br><span class="line">            &quot;works&quot; : 2,</span><br><span class="line">            &quot;advanced&quot; : 1,</span><br><span class="line">            &quot;needTime&quot; : 0,</span><br><span class="line">            &quot;needYield&quot; : 0,</span><br><span class="line">            &quot;saveState&quot; : 0,</span><br><span class="line">            &quot;restoreState&quot; : 0,</span><br><span class="line">            &quot;isEOF&quot; : 1,</span><br><span class="line">            &quot;invalidates&quot; : 0,</span><br><span class="line">            &quot;keyPattern&quot; : &#123;</span><br><span class="line">                    &quot;name&quot; : 1</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;indexName&quot; : &quot;name_1&quot;,</span><br><span class="line">            &quot;isMultiKey&quot; : false,</span><br><span class="line">            &quot;multiKeyPaths&quot; : &#123;</span><br><span class="line">                    &quot;name&quot; : [ ]</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;isUnique&quot; : false,</span><br><span class="line">            &quot;isSparse&quot; : false,</span><br><span class="line">            &quot;isPartial&quot; : false,</span><br><span class="line">            &quot;indexVersion&quot; : 2,</span><br><span class="line">            &quot;direction&quot; : &quot;forward&quot;,</span><br><span class="line">            &quot;indexBounds&quot; : &#123;</span><br><span class="line">                    &quot;name&quot; : [</span><br><span class="line">                            &quot;[\&quot;plf\&quot;, \&quot;plf\&quot;]&quot;</span><br><span class="line">                    ]</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;keysExamined&quot; : 1,</span><br><span class="line">            &quot;seeks&quot; : 1,</span><br><span class="line">            &quot;dupsTested&quot; : 0,</span><br><span class="line">            &quot;dupsDropped&quot; : 0,</span><br><span class="line">            &quot;seenInvalidated&quot; : 0</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;,</span><br><span class="line">&quot;serverInfo&quot; : &#123;</span><br><span class="line">    &quot;host&quot; : &quot;.&quot;,</span><br><span class="line">    &quot;port&quot; : 27017,</span><br><span class="line">    &quot;version&quot; : &quot;3.5.11-226-g5831278&quot;,</span><br><span class="line">    &quot;gitVersion&quot; : &quot;.&quot;</span><br><span class="line">&#125;,</span><br><span class="line">&quot;ok&quot; : 1</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="结果注释"><a href="#结果注释" class="headerlink" title="结果注释"></a>结果注释</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">namespace：该值返回的是该query所查询的表</span><br><span class="line">indexfilter：是否使用了索引过滤(index filter)</span><br><span class="line">winningPlan：查询优化器针对该query所返回的最优执行计划的详细内容</span><br><span class="line">winningPlan.stage：最优执行计划的stage</span><br><span class="line">winningPlan.inputStage：explain.queryPlanner.winningPlan.stage的child stage</span><br><span class="line">winningPlan.inputStage.keyPattern：所扫描的index内容，此处是w:1与n:1</span><br><span class="line">winningPlan.inputStage.indexName：winning plan所选用的index</span><br><span class="line">winningPlan.inputStage.isMultiKey：是否是Multikey，此处返回是false，如果索引建立在array上，此处将是true</span><br><span class="line">winningPlan.inputStage.direction：此query的查询顺序，此处是forward，如果用了.sort(&#123;w:-1&#125;)将显示backward</span><br><span class="line">winningPlan.inputStage.indexBounds：winningplan所扫描的索引范围。</span><br><span class="line">rejectedPlans：其他执行计划（非最优而被查询优化器reject的）的详细返回</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">executionSuccess：是否执行成功</span><br><span class="line">nReturned：查询的返回条数</span><br><span class="line">executionTimeMillis：整体执行时间</span><br><span class="line">totalKeysExamined：扫描索引条目的数量</span><br><span class="line">totalDocsExamined：扫描文档的数量</span><br><span class="line">executionStages.nReturned：意义与nReturned一样</span><br><span class="line">executionStages.executionTimeMillisEstimate：意义与executionTimeMillis一样</span><br><span class="line">executionStages.docsExamined：意义与totalDocsExamined一样</span><br><span class="line">executionStages.executionStats.inputStage中：的与上述理解方式相同</span><br></pre></td></tr></table></figure>
+<p>stage分类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">COLLSCAN：扫描整个集合 </span><br><span class="line">IXSCAN：索引扫描 </span><br><span class="line">FETCH：根据索引去检索选择document</span><br><span class="line">SHARD_MERGE：将各个分片返回数据进行merge</span><br><span class="line">SORT：表明在内存中进行了排序（与老版本的scanAndOrder:true一致）</span><br><span class="line">LIMIT：使用limit限制返回数</span><br><span class="line">SKIP：使用skip进行跳过 IDHACK：针对_id进行查</span><br><span class="line">SHARDING_FILTER：通过mongos对分片数据进行查询</span><br><span class="line">COUNT：利用db.coll.explain().count()之类进行count</span><br><span class="line">COUNTSCAN：count不使用用Index进行count时的stage返回</span><br><span class="line">COUNT_SCAN：count使用了Index进行count时的stage返回 SUBPLA：未使用到索引的$or查询的stage返回</span><br><span class="line">TEXT：使用全文索引进行查询时候的stage返回 PROJECTION：限定返回字段时候stage的返回</span><br></pre></td></tr></table></figure></p>
+<h5 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h5><p>目前使用<code>MongoDB</code>版本为3.5所以<code>explain()</code>有所不同</p>
+<ul>
+<li>1、<code>explain()</code>里面有可以选择不同的参数<code>queryPlanner</code>、<code>executionStats</code>和<code>allPlansExecution</code>，默认是<code>queryPlanner</code>，不同的参数返回值都不同.</li>
+<li>2、<code>explain()</code>返回很多参数可以参考<a href="https://docs.mongodb.com/manual/reference/method/db.collection.explain/" target="_blank" rel="noopener">官方文档</a></li>
+<li>3、<code>queryPlanner</code>模式下并不会去真正进行<code>query</code>语句查询，而是针对<code>query</code>语句进行执行计划分析并选出<code>winning plan</code>。</li>
+</ul>
+<h3 id="索引语法"><a href="#索引语法" class="headerlink" title="索引语法"></a>索引语法</h3><h4 id="创建索引"><a href="#创建索引" class="headerlink" title="创建索引"></a>创建索引</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.createIndex(keys, options)</span><br></pre></td></tr></table></figure>
+<p>目前3.0版本以上建议使用<code>db.collection.createIndex()</code>代替<code>db.collection.ensureIndex(keys, options)</code>。</p>
+<p>其中keys官方说明：包含字段和值对的文档，其中字段是索引键，值描述该字段的索引类型。对于字段上的升序索引，请指定一个值1; 为了降序索引，指定一个值-1。</p>
+<p>options的可选值</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>background</td>
+<td>布尔</td>
+<td>可选的。在后台构建索引所以操作不会阻止其他数据库操作。指定true在后台构建。默认值是false。</td>
+</tr>
+<tr>
+<td>unique</td>
+<td>布尔</td>
+<td>可选的。创建唯一索引，以便集合不接受索引键值与索引中现有值匹配的文档的插入或更新。</td>
+</tr>
+<tr>
+<td>name</td>
+<td>字符串</td>
+<td>可选的。索引的名称。如果未指定，MongoDB通过连接索引字段的名称和排序顺序来生成索引名称。</td>
+</tr>
+<tr>
+<td>partialFilterExpression</td>
+<td>文件</td>
+<td>可选的。如果指定，则索引仅引用与过滤器表达式匹配的文档。</td>
+</tr>
+<tr>
+<td>sparse</td>
+<td>布尔</td>
+<td>可选的。如果true该索引仅引用具有指定字段的文档</td>
+</tr>
+<tr>
+<td>expireAfterSeconds</td>
+<td>整数</td>
+<td>可选的。指定一个值（以秒为单位）作为TTL来控制MongoDB保留此集合中文档的时间。</td>
+</tr>
+<tr>
+<td>storageEngine</td>
+<td>文件</td>
+<td>可选的。允许用户在创建索引时按每个索引配置存储引擎</td>
+</tr>
+<tr>
+<td>collation</td>
+<td>文件</td>
+<td>可选的。指定索引的排序规则。</td>
+</tr>
+</tbody>
+</table>
+<p>collation详情<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">collation: &#123;</span><br><span class="line">   locale: &lt;string&gt;,</span><br><span class="line">   caseLevel: &lt;boolean&gt;,</span><br><span class="line">   caseFirst: &lt;string&gt;,</span><br><span class="line">   strength: &lt;int&gt;,</span><br><span class="line">   numericOrdering: &lt;boolean&gt;,</span><br><span class="line">   alternate: &lt;string&gt;,</span><br><span class="line">   maxVariable: &lt;string&gt;,</span><br><span class="line">   backwards: &lt;boolean&gt;</span><br><span class="line">&#125;</span><br><span class="line">指定排序规则时，该locale字段是强制性的; 所有其他整理字段都是可选的。</span><br></pre></td></tr></table></figure></p>
+<hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.createIndexes([keyPattern,],options)</span><br></pre></td></tr></table></figure>
+<p>3.2版本中的新功能,在集合上创建一个或多个索引。</p>
+<h4 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a>删除索引</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.dropIndex(index)</span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.dropIndexes()</span><br></pre></td></tr></table></figure>
+<p>上述命令是删除<code>_id字段</code>以外的所有索引</p>
+<p>MongoDB里面没有修改索引，只能先删除索引再创建索引。</p>
+<h4 id="查询索引"><a href="#查询索引" class="headerlink" title="查询索引"></a>查询索引</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.getIndexes()</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>MongoDB在3.0以后的版本进行比较大的更新，加入了很多语法同时也修改了很多，网上的资料都差不多不适用新版本，建议如果是使用新版本需要多研究一下官方文档，一味查过时文档会造成很多迷惑性的结果，我这边是简单的总结，很多东西可以自行去<a href="https://docs.mongodb.com/manual/reference/method/" target="_blank" rel="noopener">官网</a>找寻。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MongoDB/" rel="tag"><i class="fa fa-tag"></i> MongoDB</a>
+          
+            <a href="/tags/非关系数据库/" rel="tag"><i class="fa fa-tag"></i> 非关系数据库</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/01/Java之序列化/" rel="next" title="Java之序列化">
+                <i class="fa fa-chevron-left"></i> Java之序列化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/09/MyBatis之缓存/" rel="prev" title="MyBatis之缓存">
+                MyBatis之缓存 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">枫叶梨花</p>
+              <p class="site-description motion-element" itemprop="description">正在努力提高技术的小码农</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/user/5839013461ff4b007ec2d4c4/posts?sort=popular" title="枫叶梨花" target="_blank">枫叶梨花</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#查询分析"><span class="nav-number">1.</span> <span class="nav-text">查询分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#语法"><span class="nav-number">1.1.</span> <span class="nav-text">语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#案例及结果"><span class="nav-number">1.2.</span> <span class="nav-text">案例及结果</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#案例"><span class="nav-number">1.2.1.</span> <span class="nav-text">案例</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#结果"><span class="nav-number">1.2.2.</span> <span class="nav-text">结果</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#结果注释"><span class="nav-number">1.2.3.</span> <span class="nav-text">结果注释</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#注意点"><span class="nav-number">1.2.4.</span> <span class="nav-text">注意点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引语法"><span class="nav-number">2.</span> <span class="nav-text">索引语法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建索引"><span class="nav-number">2.1.</span> <span class="nav-text">创建索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除索引"><span class="nav-number">2.2.</span> <span class="nav-text">删除索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询索引"><span class="nav-number">2.3.</span> <span class="nav-text">查询索引</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫叶梨花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">88.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

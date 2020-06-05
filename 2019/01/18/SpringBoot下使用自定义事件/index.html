@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="SpringBoot,自定义事件,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="事件机制是Spring的一个功能，目前我们使用了SpringBoot框架，所以记录下事件机制在SpringBoot框架下的使用，同时实现异步处理。">
+<meta name="keywords" content="SpringBoot,自定义事件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot下使用自定义事件">
+<meta property="og:url" content="http://yoursite.com/2019/01/18/SpringBoot下使用自定义事件/index.html">
+<meta property="og:site_name" content="梦起飞">
+<meta property="og:description" content="事件机制是Spring的一个功能，目前我们使用了SpringBoot框架，所以记录下事件机制在SpringBoot框架下的使用，同时实现异步处理。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-01-18T13:34:30.509Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot下使用自定义事件">
+<meta name="twitter:description" content="事件机制是Spring的一个功能，目前我们使用了SpringBoot框架，所以记录下事件机制在SpringBoot框架下的使用，同时实现异步处理。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/18/SpringBoot下使用自定义事件/">
+
+
+
+
+
+  <title>SpringBoot下使用自定义事件 | 梦起飞</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梦起飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天行健，君子以自强不息</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/18/SpringBoot下使用自定义事件/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="枫叶梨花">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梦起飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringBoot下使用自定义事件</h1>
+        
+
+        <div class="post-meta">
+			
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-18T19:44:20+08:00">
+                2019-01-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java框架/" itemprop="url" rel="index">
+                    <span itemprop="name">Java框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,343
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>事件机制是Spring的一个功能，目前我们使用了SpringBoot框架，所以记录下事件机制在SpringBoot框架下的使用，同时实现异步处理。<br><a id="more"></a></p>
+<p>事件机制其实就是使用了观察者模式(发布-订阅模式)，之前的博客我有讲过<a href="https://panlf.github.io/2018/03/31/%E5%9F%BA%E4%BA%8EJava%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" target="_blank" rel="noopener">观察者模式</a>，同时介绍了SpringMVC下的事件发布，可以去了解一下。</p>
+<p>Spring的事件机制经过如下流程：</p>
+<ul>
+<li>1、自定义事件，继承org.springframework.context.ApplicationEvent抽象类</li>
+<li>2、定义事件监听器，实现org.springframework.context.ApplicationListener接口</li>
+<li>3、在Spring容器中发布事件</li>
+</ul>
+<h3 id="SpringBoot的实例程序"><a href="#SpringBoot的实例程序" class="headerlink" title="SpringBoot的实例程序"></a>SpringBoot的实例程序</h3><p>实现一个保存用户的时候，向用户提供的邮箱发送一封邮件的功能，同时采用异步处理。</p>
+<h4 id="自定义事件"><a href="#自定义事件" class="headerlink" title="自定义事件"></a>自定义事件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import org.springframework.context.ApplicationEvent;</span><br><span class="line"></span><br><span class="line">public class EmailEvent extends ApplicationEvent &#123;</span><br><span class="line"></span><br><span class="line">	private static final long serialVersionUID = 3733891603598996786L;</span><br><span class="line"></span><br><span class="line">	private String emailAddress;</span><br><span class="line"></span><br><span class="line">	public EmailEvent(String emailAddress) &#123;</span><br><span class="line">		super(emailAddress);</span><br><span class="line">		this.emailAddress = emailAddress;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public String getEmailAddress() &#123;</span><br><span class="line">		return emailAddress;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setEmailAddress(String emailAddress) &#123;</span><br><span class="line">		this.emailAddress = emailAddress;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="定义事件监听器"><a href="#定义事件监听器" class="headerlink" title="定义事件监听器"></a>定义事件监听器</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">import java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line">import org.slf4j.Logger;</span><br><span class="line">import org.slf4j.LoggerFactory;</span><br><span class="line">import org.springframework.context.ApplicationListener;</span><br><span class="line">import org.springframework.scheduling.annotation.Async;</span><br><span class="line">import org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line">@Component</span><br><span class="line">public class EmailEventListener implements ApplicationListener&lt;EmailEvent&gt; &#123;</span><br><span class="line"></span><br><span class="line">	private static Logger log = LoggerFactory.getLogger(EmailEventListener.class);</span><br><span class="line"></span><br><span class="line">	// 异步处理</span><br><span class="line">	@Async</span><br><span class="line">	@Override</span><br><span class="line">	public void onApplicationEvent(EmailEvent event) &#123;</span><br><span class="line">		log.info(&quot;监听到事件--邮箱地址:&quot; + event.getEmailAddress());</span><br><span class="line"></span><br><span class="line">		//模拟处理的耗时3s</span><br><span class="line">		try &#123;</span><br><span class="line">			TimeUnit.SECONDS.sleep(3);</span><br><span class="line">		&#125; catch (InterruptedException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		log.info(&quot;事件处理完成&quot;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="发布事件"><a href="#发布事件" class="headerlink" title="发布事件"></a>发布事件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">import org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line">import org.springframework.context.ApplicationContext;</span><br><span class="line">import org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line">@Component</span><br><span class="line">public class EmailEventPublish &#123;</span><br><span class="line"></span><br><span class="line">	@Autowired</span><br><span class="line">	private ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line">	public void publishEvent(String emailAddress) &#123;</span><br><span class="line">		EmailEvent event = new EmailEvent(emailAddress);</span><br><span class="line">		applicationContext.publishEvent(event);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="调用事件"><a href="#调用事件" class="headerlink" title="调用事件"></a>调用事件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">import org.slf4j.Logger;</span><br><span class="line">import org.slf4j.LoggerFactory;</span><br><span class="line">import org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line">import org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line">import org.springframework.web.bind.annotation.RequestParam;</span><br><span class="line">import org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line">import com.example.demo.event.EmailEventPublish;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@RestController</span><br><span class="line">public class EventController &#123;</span><br><span class="line">	private static Logger log = LoggerFactory.getLogger(EventController.class);</span><br><span class="line"></span><br><span class="line">	@Autowired</span><br><span class="line">	private EmailEventPublish emailEventPublish;</span><br><span class="line"></span><br><span class="line">	@RequestMapping(&quot;/event&quot;)</span><br><span class="line">	public void publishEvent(@RequestParam String emailAddress) &#123;</span><br><span class="line">		// 发布事件 -- 采用异步处理</span><br><span class="line">		emailEventPublish.publishEvent(emailAddress);</span><br><span class="line"></span><br><span class="line">		// 正常该语句先执行</span><br><span class="line">		log.info(&quot;Controller业务处理&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h4><p>访问如下地址</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:8080/event?emailAddress=plf@163.com</span><br></pre></td></tr></table></figure>
+<p>结果为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">2019-01-18 21:21:14.338  INFO 6400 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet &apos;dispatcherServlet&apos;</span><br><span class="line">2019-01-18 21:21:14.338  INFO 6400 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet &apos;dispatcherServlet&apos;: initialization started</span><br><span class="line">2019-01-18 21:21:14.370  INFO 6400 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet &apos;dispatcherServlet&apos;: initialization completed in 32 ms</span><br><span class="line">2019-01-18 21:21:14.429  INFO 6400 --- [nio-8080-exec-1] .s.a.AnnotationAsyncExecutionInterceptor : No task executor bean found for async processing: no bean of type TaskExecutor and no bean named &apos;taskExecutor&apos; either</span><br><span class="line">2019-01-18 21:21:14.534  INFO 6400 --- [nio-8080-exec-1] c.e.demo.controller.EventController      : Controller业务处理</span><br><span class="line">2019-01-18 21:21:14.535  INFO 6400 --- [cTaskExecutor-1] c.example.demo.event.EmailEventListener  : 监听到事件--邮箱地址:plf@163.com</span><br><span class="line">2019-01-18 21:21:17.536  INFO 6400 --- [cTaskExecutor-1] c.example.demo.event.EmailEventListener  : 事件处理完成</span><br></pre></td></tr></table></figure>
+<p>上述结果可知是实现了异步处理，先打印了事件之后的程序，等时间到再执行监听程序的代码。</p>
+<p>实现异步处理就是在监听事件执行业务代码的方法上添加<code>@Async</code>注解，同时在启动类上添加<code>@EnableAsync</code>即可。</p>
+<p>上面的日志还提到了<code>TaskExecutor</code>,这是如果有自定义的线程池就会去调用，如果没有就用默认的。我们也可以自己定义一个<code>TaskExecutor</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;</span><br><span class="line">import org.springframework.context.annotation.Bean;</span><br><span class="line">import org.springframework.context.annotation.Configuration;</span><br><span class="line">import org.springframework.lang.Nullable;</span><br><span class="line">import org.springframework.scheduling.annotation.AsyncConfigurer;</span><br><span class="line">import org.springframework.scheduling.annotation.EnableAsync;</span><br><span class="line">import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;</span><br><span class="line"></span><br><span class="line">import java.util.concurrent.Executor;</span><br><span class="line">import java.util.concurrent.ThreadPoolExecutor;</span><br><span class="line"></span><br><span class="line">@EnableAsync</span><br><span class="line">@Configuration</span><br><span class="line">public class ThreadPool implements AsyncConfigurer &#123;</span><br><span class="line">	@Nullable</span><br><span class="line">	@Override</span><br><span class="line">	@Bean(&quot;taskExecutor&quot;)</span><br><span class="line">	public Executor getAsyncExecutor() &#123;</span><br><span class="line">		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();</span><br><span class="line">		// 线程池创建时候初始化的线程数</span><br><span class="line">		executor.setCorePoolSize(10);</span><br><span class="line">		// 线程池最大的线程数，只有在缓冲队列满了之后才会申请超过核心线程数的线程</span><br><span class="line">		executor.setMaxPoolSize(20);</span><br><span class="line">		// 用来缓冲执行任务的队列</span><br><span class="line">		executor.setQueueCapacity(200);</span><br><span class="line">		// 允许线程的空闲时间60秒</span><br><span class="line">		executor.setKeepAliveSeconds(60);</span><br><span class="line">		// 线程池名的前缀</span><br><span class="line">		executor.setThreadNamePrefix(&quot;taskExecutor-&quot;);</span><br><span class="line">		// 线程池对拒绝任务的处理策略</span><br><span class="line">		executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());</span><br><span class="line">		executor.initialize();</span><br><span class="line">		return executor;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Nullable</span><br><span class="line">	@Override</span><br><span class="line">	public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() &#123;</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">2019-01-18 21:27:36.507  INFO 7848 --- [nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet &apos;dispatcherServlet&apos;</span><br><span class="line">2019-01-18 21:27:36.507  INFO 7848 --- [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : FrameworkServlet &apos;dispatcherServlet&apos;: initialization started</span><br><span class="line">2019-01-18 21:27:36.537  INFO 7848 --- [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : FrameworkServlet &apos;dispatcherServlet&apos;: initialization completed in 30 ms</span><br><span class="line">2019-01-18 21:27:36.757  INFO 7848 --- [nio-8080-exec-2] c.e.demo.controller.EventController      : Controller业务处理</span><br><span class="line">2019-01-18 21:27:36.757  INFO 7848 --- [ taskExecutor-1] c.example.demo.event.EmailEventListener  : 监听到事件--邮箱地址:plf@163.com</span><br><span class="line">2019-01-18 21:27:39.757  INFO 7848 --- [ taskExecutor-1] c.example.demo.event.EmailEventListener  : 事件处理完成</span><br></pre></td></tr></table></figure>
+<p>可知是使用我们定义的线程池<code>[ taskExecutor-1]</code>。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Spring的事件机制是一个很实用的一个功能，在监听和异步处理相关的功能比较适合。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SpringBoot/" rel="tag"><i class="fa fa-tag"></i> SpringBoot</a>
+          
+            <a href="/tags/自定义事件/" rel="tag"><i class="fa fa-tag"></i> 自定义事件</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/21/SpringBoot的测试方案/" rel="next" title="SpringBoot的测试方案">
+                <i class="fa fa-chevron-left"></i> SpringBoot的测试方案
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/26/Windows下bat的小应用/" rel="prev" title="Windows下bat的小应用">
+                Windows下bat的小应用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">枫叶梨花</p>
+              <p class="site-description motion-element" itemprop="description">正在努力提高技术的小码农</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/user/5839013461ff4b007ec2d4c4/posts?sort=popular" title="枫叶梨花" target="_blank">枫叶梨花</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringBoot的实例程序"><span class="nav-number">1.</span> <span class="nav-text">SpringBoot的实例程序</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#自定义事件"><span class="nav-number">1.1.</span> <span class="nav-text">自定义事件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义事件监听器"><span class="nav-number">1.2.</span> <span class="nav-text">定义事件监听器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#发布事件"><span class="nav-number">1.3.</span> <span class="nav-text">发布事件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#调用事件"><span class="nav-number">1.4.</span> <span class="nav-text">调用事件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#结果"><span class="nav-number">1.5.</span> <span class="nav-text">结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫叶梨花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">88.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

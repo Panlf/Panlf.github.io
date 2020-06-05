@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="MySQL,JDBC,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="正常来说，目前绝大多数系统都不会使用存储过程，而且很多程序员都建议不去使用，因为存储过程很难维护，修改过于繁琐。但这也是一个知识点，程序员需要稍微了解一下。">
+<meta name="keywords" content="MySQL,JDBC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅析MySQL数据库的存储过程">
+<meta property="og:url" content="http://yoursite.com/2018/04/11/浅析MySQL数据库的存储过程/index.html">
+<meta property="og:site_name" content="梦起飞">
+<meta property="og:description" content="正常来说，目前绝大多数系统都不会使用存储过程，而且很多程序员都建议不去使用，因为存储过程很难维护，修改过于繁琐。但这也是一个知识点，程序员需要稍微了解一下。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-06-12T09:02:30.641Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浅析MySQL数据库的存储过程">
+<meta name="twitter:description" content="正常来说，目前绝大多数系统都不会使用存储过程，而且很多程序员都建议不去使用，因为存储过程很难维护，修改过于繁琐。但这也是一个知识点，程序员需要稍微了解一下。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/04/11/浅析MySQL数据库的存储过程/">
+
+
+
+
+
+  <title>浅析MySQL数据库的存储过程 | 梦起飞</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梦起飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天行健，君子以自强不息</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/11/浅析MySQL数据库的存储过程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="枫叶梨花">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梦起飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">浅析MySQL数据库的存储过程</h1>
+        
+
+        <div class="post-meta">
+			
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-11T09:36:52+08:00">
+                2018-04-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,064
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>正常来说，目前绝大多数系统都不会使用存储过程，而且很多程序员都建议不去使用，因为存储过程很难维护，修改过于繁琐。但这也是一个知识点，程序员需要稍微了解一下。</p>
+<a id="more"></a>
+<p>在具体的应用中，一个完整的操作会包含多条SQL语句。为了解决该问题，MySql提供了数据库对象存储过程。简单理解存储过程就是一条或者多条的SQL语句的集合。</p>
+<h3 id="存储过程的语法"><a href="#存储过程的语法" class="headerlink" title="存储过程的语法"></a>存储过程的语法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CREATE PROCEDURE procedure_name([procedure_parameter[,...]])</span><br><span class="line">	[characteristic...] routine_body</span><br></pre></td></tr></table></figure>
+<p>上述语句中，<code>procedure_name</code>表示所要创建的存储过程名字，<code>procedure_parameter</code>参数表示存储过程的参数，<code>characteristic</code>参数表示存储过程的特性，<code>routine_body</code>参数表示存储过程的SQL语句代码，可以使用BEGIN…END来标志SQL语句的开始和结束</p>
+<h4 id="procedure-parameter的语法形式"><a href="#procedure-parameter的语法形式" class="headerlink" title="procedure_parameter的语法形式"></a>procedure_parameter的语法形式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[IN][OUT][INOUT] parameter_name type</span><br></pre></td></tr></table></figure>
+<p>上述三个参数分别表示输入/输出类型、参数名、参数类型。其中输入/输出类型分为3种，输入、输出、输入输出类型。</p>
+<h4 id="characteristic"><a href="#characteristic" class="headerlink" title="characteristic"></a>characteristic</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">LANGUAGE SQL</span><br><span class="line">|[NOT] DETERMINISTIC</span><br><span class="line">|&#123;CONTAINS SQL|NO SQL|READS SQL DATA|MODIFIES SQL DATA&#125;</span><br><span class="line">|SQL SECURITY &#123;DEFINER|INVOKER&#125;</span><br><span class="line">|COMMENT &apos;string&apos;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>LANGUAGE SQL</code>，表示存储过程<code>routine_body</code>部分是由SQL语言的语句组成，为MySQL软件所有默认的语句。</li>
+<li><code>[NOT] DETERMINISTIC</code>，表示存储过程的执行结果是否确定，如果值为<code>DETERMINISTIC</code>表示执行结果是确定的，如果值是<code>NOT DETERMINISTIC</code>，表示执行结果不确定，即相同的输入可能得到不同的输出，默认<code>DETERMINISTIC</code>。</li>
+<li><code>{CONTAINS SQL|NO SQL|READS SQL DATA|MODIFIES SQL DATA}</code>，表示使用SQL语句的限制。如果值为<code>CONTAINS SQL</code>表示可以包含SQL语句，但不包含读或写数据的语句；如果值为<code>NO SQL</code>表示不包含SQL语句；如果值为<code>READS SQL DATA</code>表示包含读数据的语句，不包含写数据语句；如果值为<code>MODIFIES SQL DATA</code>表示包含写数据的语句。默认为<code>CONTAINS SQL</code>。</li>
+<li><code>SQL SECURITY {DEFINER|INVOKER}</code>，设置谁有权限来执行。如果值为<code>DEFINER</code>，表示只有定义者自己才能够执行，如果<code>INVOKER</code>表示调用者可以执行。默认值为<code>DEFINER</code>。</li>
+<li><code>COMMENT &#39;string&#39;</code>，表示注释语句。</li>
+</ul>
+<h3 id="查看存储过程的定义信息"><a href="#查看存储过程的定义信息" class="headerlink" title="查看存储过程的定义信息"></a>查看存储过程的定义信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SHOW CREATE PROCEDURE proce_name</span><br></pre></td></tr></table></figure>
+<p><code>proce_name</code>表示查询存储过程的名称。</p>
+<h3 id="修改存储过程"><a href="#修改存储过程" class="headerlink" title="修改存储过程"></a>修改存储过程</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER PROCEDURE procedure_name [characteristic...]</span><br></pre></td></tr></table></figure>
+<p><code>characteristic</code>与定义相比，取值只能如下(不能修改SQL语句代码，如果修改请删除重写):<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">|&#123;CONTAINS SQL|NO SQL|READS SQL DATA|MODIFIES SQL DATA&#125;</span><br><span class="line">|SQL SECURITY &#123;DEFINER|INVOKER&#125;</span><br><span class="line">|COMMENT &apos;string&apos;</span><br></pre></td></tr></table></figure></p>
+<h3 id="删除存储过程"><a href="#删除存储过程" class="headerlink" title="删除存储过程"></a>删除存储过程</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DROP PROCEDURE proce_name</span><br></pre></td></tr></table></figure>
+<h3 id="存储过程实例使用"><a href="#存储过程实例使用" class="headerlink" title="存储过程实例使用"></a>存储过程实例使用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CREATE PROCEDURE getAmount(in userid INTEGER,out amount DOUBLE)</span><br><span class="line">    COMMENT &apos;查询某学生总分&apos;</span><br><span class="line">BEGIN</span><br><span class="line">		select (englishgrade+chinesegrade+mathgrade) as amount</span><br><span class="line">		from user_info where id=userid;</span><br><span class="line">	END;</span><br></pre></td></tr></table></figure>
+<h4 id="sql调用"><a href="#sql调用" class="headerlink" title="sql调用"></a>sql调用</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">call findAmount(1,@amount)</span><br></pre></td></tr></table></figure>
+<h4 id="JDBC调用"><a href="#JDBC调用" class="headerlink" title="JDBC调用"></a>JDBC调用</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">import java.sql.CallableStatement;</span><br><span class="line">import java.sql.Connection;</span><br><span class="line">import java.sql.ResultSet;</span><br><span class="line">import java.sql.SQLException;</span><br><span class="line">import java.sql.Types;</span><br><span class="line"></span><br><span class="line">import cpm.plf.util.JdbcUtils;</span><br><span class="line"></span><br><span class="line">public class UseProcedure &#123;</span><br><span class="line">	public static double findAmount(int userid)&#123;</span><br><span class="line">		Connection conn = null;</span><br><span class="line">		CallableStatement cs =null;</span><br><span class="line">		try &#123;</span><br><span class="line">			conn = JdbcUtils.getConnection();</span><br><span class="line">			cs = conn.prepareCall(&quot;&#123;call findAmount(?,?)&#125;&quot;);</span><br><span class="line">			cs.registerOutParameter(2, Types.DOUBLE);</span><br><span class="line">			cs.setInt(1, userid);</span><br><span class="line">			ResultSet result=cs.executeQuery();</span><br><span class="line">			double amount=0;</span><br><span class="line">			while(result.next())&#123;</span><br><span class="line">				amount = result.getDouble(&quot;amount&quot;);</span><br><span class="line">			&#125;</span><br><span class="line">			return amount;</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;finally &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				if(cs!=null)&#123;</span><br><span class="line">					cs.close();	</span><br><span class="line">				&#125;</span><br><span class="line">			&#125; catch (SQLException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">			JdbcUtils.free(null, null, conn);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		return 0;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	public static int getNum()&#123;</span><br><span class="line">		Connection conn = null;</span><br><span class="line">		CallableStatement cs =null;</span><br><span class="line">		try &#123;</span><br><span class="line">			conn = JdbcUtils.getConnection();</span><br><span class="line">			cs = conn.prepareCall(&quot;&#123;call getNum(?)&#125;&quot;);</span><br><span class="line">			cs.registerOutParameter(1, Types.INTEGER);</span><br><span class="line">			ResultSet result=cs.executeQuery();</span><br><span class="line">			int num = 0;</span><br><span class="line">			if(result.next())&#123;</span><br><span class="line">				num = result.getInt(1);//result.getInt(&quot;num&quot;)</span><br><span class="line">			&#125;</span><br><span class="line">			return num;</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;finally &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				if(cs!=null)&#123;</span><br><span class="line">					cs.close();	</span><br><span class="line">				&#125;</span><br><span class="line">			&#125; catch (SQLException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">			JdbcUtils.free(null, null, conn);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		return 0;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这篇博客我也只是粗浅的讲解了MySql数据库的存储过程的使用，只对新手有点用，说实话我自己还没有维护过几百行甚至几千行的存储过程，但是听说很多程序员维护的心力交瘁，不过正常目前的系统来讲，应该尽量避免存储过程，维护困难而且换库语法不兼容。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MySQL/" rel="tag"><i class="fa fa-tag"></i> MySQL</a>
+          
+            <a href="/tags/JDBC/" rel="tag"><i class="fa fa-tag"></i> JDBC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/08/详解MySQL中使用JDBC流式查询/" rel="next" title="详解MySQL中使用JDBC流式查询">
+                <i class="fa fa-chevron-left"></i> 详解MySQL中使用JDBC流式查询
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/23/基于HttpClient的登录功能实现/" rel="prev" title="基于HttpClient的登录功能实现">
+                基于HttpClient的登录功能实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">枫叶梨花</p>
+              <p class="site-description motion-element" itemprop="description">正在努力提高技术的小码农</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/user/5839013461ff4b007ec2d4c4/posts?sort=popular" title="枫叶梨花" target="_blank">枫叶梨花</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#存储过程的语法"><span class="nav-number">1.</span> <span class="nav-text">存储过程的语法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#procedure-parameter的语法形式"><span class="nav-number">1.1.</span> <span class="nav-text">procedure_parameter的语法形式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#characteristic"><span class="nav-number">1.2.</span> <span class="nav-text">characteristic</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看存储过程的定义信息"><span class="nav-number">2.</span> <span class="nav-text">查看存储过程的定义信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改存储过程"><span class="nav-number">3.</span> <span class="nav-text">修改存储过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除存储过程"><span class="nav-number">4.</span> <span class="nav-text">删除存储过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储过程实例使用"><span class="nav-number">5.</span> <span class="nav-text">存储过程实例使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#sql调用"><span class="nav-number">5.1.</span> <span class="nav-text">sql调用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JDBC调用"><span class="nav-number">5.2.</span> <span class="nav-text">JDBC调用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫叶梨花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">88.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

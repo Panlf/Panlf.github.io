@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Dubbo,Zookeeper,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="目前，后端热门的词就是微服务化，微服务垂直拆分项目，使得项目更加注重于单一功能，提高开发效率和项目性能，面向服务架构的框架热门的有SpringCloud全家桶、Dubbo+Zookeeper等。">
+<meta name="keywords" content="Dubbo,Zookeeper">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dubbo+Zookeeper项目的快速启动">
+<meta property="og:url" content="http://yoursite.com/2018/11/10/Dubbo-Zookeeper项目的快速启动/index.html">
+<meta property="og:site_name" content="梦起飞">
+<meta property="og:description" content="目前，后端热门的词就是微服务化，微服务垂直拆分项目，使得项目更加注重于单一功能，提高开发效率和项目性能，面向服务架构的框架热门的有SpringCloud全家桶、Dubbo+Zookeeper等。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-03-09T06:22:36.828Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dubbo+Zookeeper项目的快速启动">
+<meta name="twitter:description" content="目前，后端热门的词就是微服务化，微服务垂直拆分项目，使得项目更加注重于单一功能，提高开发效率和项目性能，面向服务架构的框架热门的有SpringCloud全家桶、Dubbo+Zookeeper等。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/11/10/Dubbo-Zookeeper项目的快速启动/">
+
+
+
+
+
+  <title>Dubbo+Zookeeper项目的快速启动 | 梦起飞</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梦起飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天行健，君子以自强不息</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/10/Dubbo-Zookeeper项目的快速启动/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="枫叶梨花">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梦起飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Dubbo+Zookeeper项目的快速启动</h1>
+        
+
+        <div class="post-meta">
+			
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-10T13:22:24+08:00">
+                2018-11-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java技术/" itemprop="url" rel="index">
+                    <span itemprop="name">Java技术</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,049
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>目前，后端热门的词就是微服务化，微服务垂直拆分项目，使得项目更加注重于单一功能，提高开发效率和项目性能，面向服务架构的框架热门的有SpringCloud全家桶、Dubbo+Zookeeper等。</p>
+<a id="more"></a>
+<p>Dubbo是一个分布式、高性能、透明化的RPC服务框架，主要提供服务自动注册、自动发现等高效服务治理方案，Zookeeper是分布式协调组件，用作Dubbo的注册中心，当然Zookeeper还有其他作用，这里用作注册中心。</p>
+<p>该篇博客主要总结如果快速启动Dubbo+Zookeeper项目，更多资料可以访问<a href="http://dubbo.incubator.apache.org/zh-cn/" target="_blank" rel="noopener">Dubbo官网</a>。其实我也是参考官网资料写的博客，不过其中有些坑，花了不少时间填补了一下。</p>
+<h3 id="安装Zookeeper"><a href="#安装Zookeeper" class="headerlink" title="安装Zookeeper"></a>安装Zookeeper</h3><p>目前没有Linux环境，所以先在Windows实验。</p>
+<p>1、下载地址 - <a href="http://zookeeper.apache.org/releases.html" target="_blank" rel="noopener">http://zookeeper.apache.org/releases.html</a><br>2、选择一个版本下载，放在任意一个存储盘。<br>3、解压，在conf目录下找到zoo.cfg并配置，dataDir、dataDirLog等属性都可自选配置。<br>4、启动bin/zkServer.cmd.</p>
+<h3 id="搭建Provider"><a href="#搭建Provider" class="headerlink" title="搭建Provider"></a>搭建Provider</h3><h4 id="定义服务接口"><a href="#定义服务接口" class="headerlink" title="定义服务接口"></a>定义服务接口</h4><p>新建Maven-Project(dubbo-service),然后定义服务接口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface DemoService &#123;</span><br><span class="line">	String demo(String name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="导入Jar包"><a href="#导入Jar包" class="headerlink" title="导入Jar包"></a>导入Jar包</h4><p>新建Maven-Project(dubbo-service-impl)，导入相关Jar包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;</span><br><span class="line">  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</span><br><span class="line">  &lt;groupId&gt;com.plf&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;dubbo-service-impl&lt;/artifactId&gt;</span><br><span class="line">  &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;properties&gt;</span><br><span class="line">  	&lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;</span><br><span class="line">  	&lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;</span><br><span class="line">  	&lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;</span><br><span class="line">  &lt;/properties&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;dependencies&gt;</span><br><span class="line">  	&lt;dependency&gt;</span><br><span class="line">  		&lt;groupId&gt;com.plf&lt;/groupId&gt;</span><br><span class="line">  		&lt;artifactId&gt;dubbo-service&lt;/artifactId&gt;</span><br><span class="line">  		&lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;</span><br><span class="line">  	&lt;/dependency&gt;</span><br><span class="line">  	</span><br><span class="line">  	&lt;dependency&gt;</span><br><span class="line">  		&lt;groupId&gt;com.alibaba&lt;/groupId&gt;</span><br><span class="line">  		&lt;artifactId&gt;dubbo&lt;/artifactId&gt;</span><br><span class="line">  		&lt;version&gt;2.6.2&lt;/version&gt;</span><br><span class="line">  	&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	&lt;!-- 特别注意，以下Jar必须导入，不然会报错 --&gt;  	</span><br><span class="line">	&lt;dependency&gt;</span><br><span class="line">	    &lt;groupId&gt;com.github.sgroschupf&lt;/groupId&gt;</span><br><span class="line">	    &lt;artifactId&gt;zkclient&lt;/artifactId&gt;</span><br><span class="line">	    &lt;version&gt;0.1&lt;/version&gt;</span><br><span class="line">	&lt;/dependency&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;dependency&gt;</span><br><span class="line">	    &lt;groupId&gt;org.apache.curator&lt;/groupId&gt;</span><br><span class="line">	    &lt;artifactId&gt;curator-framework&lt;/artifactId&gt;</span><br><span class="line">	    &lt;version&gt;2.8.0&lt;/version&gt;</span><br><span class="line">	&lt;/dependency&gt;</span><br><span class="line">	&lt;dependency&gt;</span><br><span class="line">	    &lt;groupId&gt;org.apache.curator&lt;/groupId&gt;</span><br><span class="line">	    &lt;artifactId&gt;curator-recipes&lt;/artifactId&gt;</span><br><span class="line">	    &lt;version&gt;2.8.0&lt;/version&gt;</span><br><span class="line">	&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">	&lt;dependency&gt;</span><br><span class="line">	    &lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;</span><br><span class="line">	    &lt;artifactId&gt;zookeeper&lt;/artifactId&gt;</span><br><span class="line">	    &lt;version&gt;3.5.2-alpha&lt;/version&gt;</span><br><span class="line">	    &lt;exclusions&gt;</span><br><span class="line">            &lt;exclusion&gt;</span><br><span class="line">                &lt;groupId&gt;org.slf4j&lt;/groupId&gt;</span><br><span class="line">                &lt;artifactId&gt;slf4j-log4j12&lt;/artifactId&gt;</span><br><span class="line">            &lt;/exclusion&gt;</span><br><span class="line">            &lt;exclusion&gt;</span><br><span class="line">                &lt;groupId&gt;log4j&lt;/groupId&gt;</span><br><span class="line">                &lt;artifactId&gt;log4j&lt;/artifactId&gt;</span><br><span class="line">            &lt;/exclusion&gt;</span><br><span class="line">            &lt;exclusion&gt;</span><br><span class="line">                &lt;groupId&gt;io.netty&lt;/groupId&gt;</span><br><span class="line">                &lt;artifactId&gt;netty&lt;/artifactId&gt;</span><br><span class="line">            &lt;/exclusion&gt;</span><br><span class="line">        &lt;/exclusions&gt;</span><br><span class="line">	&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">  &lt;/dependencies&gt;</span><br><span class="line">&lt;/project&gt;</span><br></pre></td></tr></table></figure>
+<p><em>上面的特许注意的Jar包，官网没有给出，但是启动也是需要的，不然就会报错。</em></p>
+<h4 id="实现服务接口"><a href="#实现服务接口" class="headerlink" title="实现服务接口"></a>实现服务接口</h4><p>dubbo-service-impl项目中实现服务接口类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">import com.plf.service.DemoService;</span><br><span class="line"></span><br><span class="line">public class DemoServiceImpl implements DemoService &#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public String demo(String name) &#123;</span><br><span class="line">		return &quot;传递过来的name:&quot;+name;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Spring配置声明暴露服务"><a href="#Spring配置声明暴露服务" class="headerlink" title="Spring配置声明暴露服务"></a>Spring配置声明暴露服务</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</span><br><span class="line">    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">    xmlns:dubbo=&quot;http://dubbo.apache.org/schema/dubbo&quot;</span><br><span class="line">    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans        </span><br><span class="line">    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd        </span><br><span class="line">    http://dubbo.apache.org/schema/dubbo        </span><br><span class="line">    http://dubbo.apache.org/schema/dubbo/dubbo.xsd&quot;&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;!-- 当前Provider自定义名字 --&gt;</span><br><span class="line">    &lt;dubbo:application name=&quot;dubbo-service&quot;/&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;!-- 配置zookeeper注册中心 --&gt;</span><br><span class="line">    &lt;dubbo:registry protocol=&quot;zookeeper&quot; address=&quot;127.0.0.1:2181&quot; /&gt;</span><br><span class="line"> </span><br><span class="line">    &lt;!-- 用dubbo协议在20880端口暴露服务 --&gt;</span><br><span class="line">    &lt;dubbo:protocol name=&quot;dubbo&quot; port=&quot;20880&quot; /&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;!-- 注册功能 --&gt;</span><br><span class="line">    &lt;dubbo:service interface=&quot;com.plf.service.DemoService&quot; ref=&quot;demoServiceImpl&quot;&gt;&lt;/dubbo:service&gt;</span><br><span class="line">    &lt;bean id=&quot;demoServiceImpl&quot; class=&quot;com.plf.service.impl.DemoServiceImpl&quot;&gt;&lt;/bean&gt;</span><br><span class="line">    </span><br><span class="line">&lt;/beans&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="加载配置"><a href="#加载配置" class="headerlink" title="加载配置"></a>加载配置</h4><p>启动即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import java.io.IOException;</span><br><span class="line"></span><br><span class="line">import org.springframework.context.support.ClassPathXmlApplicationContext;</span><br><span class="line"></span><br><span class="line">public class Provider &#123;</span><br><span class="line"></span><br><span class="line">	@SuppressWarnings(&quot;resource&quot;)</span><br><span class="line">	public static void main(String[] args) throws IOException &#123;</span><br><span class="line">		ClassPathXmlApplicationContext context = </span><br><span class="line">			new ClassPathXmlApplicationContext(new String[] &#123;&quot;applicationContext-dubbo.xml&quot;&#125;);</span><br><span class="line">        context.start();</span><br><span class="line">        System.in.read(); // 按任意键退出</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="启动dubbo-admin观察服务"><a href="#启动dubbo-admin观察服务" class="headerlink" title="启动dubbo-admin观察服务"></a>启动dubbo-admin观察服务</h4><p>目前Dubbo2.6.x版本跟之前版本已经不同了，所以很多网上配置已经不起作用了。而且在<code>https://github.com/apache/incubator-dubbo/releases</code>这里下载的源码没有了dubbo-admin这个目录，所以需要<code>https://github.com/apache/incubator-dubbo-ops/</code>这个代码来使用，<br>该版本提供前端和后端两个项目，后端是一个SpringBoot项目，启动即可。前端是vue项目，也可以启动访问。</p>
+<p>下载项目</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/apache/incubator-dubbo-ops.git</span><br></pre></td></tr></table></figure>
+<h5 id="后端"><a href="#后端" class="headerlink" title="后端"></a>后端</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1、进入\incubator-dubbo-ops\dubbo-admin-backend目录</span><br><span class="line">2、在 dubbo-admin-backend/src/resources/application-production.properties中指定注册中心地址</span><br><span class="line">3、构建 mvn clean package</span><br><span class="line">4、启动 mvn spring-boot:run</span><br><span class="line">5、访问 http://localhost:8080</span><br></pre></td></tr></table></figure>
+<p>这里还有一个小插曲：<br>    注意该项目默认端口是8080，刚开始我一直启动不了，报错连接不上8080端口。感觉是因为某个软件占用了端口。然后我去杀那个占用端口的程序，杀掉之后发现我的Zookeeper会闪退，然后我觉得Zookeeper是2181端口，没理由是因为这个原因，试了几次还真发现Zookeeper会占用8080端口，启动日志可看到<code>Started AdminServer on address 0.0.0.0, port 8088 and command URL /commands</code>，原来是因为Zookeeper内嵌的管理控制台是通过jetty启动，会占用8080 端口。真相大白修改掉这个就能正常了。</p>
+<h5 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1、进入\incubator-dubbo-ops\dubbo-admin-dubbo-admin-frontend</span><br><span class="line">2、npm run dev</span><br><span class="line">5、访问 http://localhost:8081</span><br></pre></td></tr></table></figure>
+<p>前提需要安装node.js，我使用过程还要安装一个webpack-dev-server，然后正常就能访问了。</p>
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><p>这个项目其实还有建设好，很多功能都还没有实现，我访问的时候都没有在页面显示出服务名，但是我F12查看，发现数据其实已经访问了，但是页面没有显示出来，不知道是不是因为项目没有建设好的原因。</p>
+<h3 id="搭建Consumer"><a href="#搭建Consumer" class="headerlink" title="搭建Consumer"></a>搭建Consumer</h3><h4 id="导入Jar包-1"><a href="#导入Jar包-1" class="headerlink" title="导入Jar包"></a>导入Jar包</h4><p>新建Maven-Project(dubbo-consumer)，导入如上Jar包</p>
+<h4 id="定义消费接口"><a href="#定义消费接口" class="headerlink" title="定义消费接口"></a>定义消费接口</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface DemoService &#123;</span><br><span class="line">	String demo(String name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="实现消费接口"><a href="#实现消费接口" class="headerlink" title="实现消费接口"></a>实现消费接口</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import com.alibaba.dubbo.config.annotation.Reference;</span><br><span class="line">import com.plf.consumer.service.ConsumerService;</span><br><span class="line">import com.plf.service.DemoService;</span><br><span class="line"></span><br><span class="line">public class ConsumerServiceImpl implements ConsumerService &#123;</span><br><span class="line"></span><br><span class="line">	@Reference</span><br><span class="line">	private DemoService demoService;</span><br><span class="line">	</span><br><span class="line">	public void consumer() &#123;</span><br><span class="line">		String name =demoService.demo(&quot;张三&quot;);</span><br><span class="line">		System.out.println(name);</span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Spring配置"><a href="#Spring配置" class="headerlink" title="Spring配置"></a>Spring配置</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</span><br><span class="line">    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">    xmlns:dubbo=&quot;http://dubbo.apache.org/schema/dubbo&quot;</span><br><span class="line">    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans        </span><br><span class="line">    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd        </span><br><span class="line">    http://dubbo.apache.org/schema/dubbo        </span><br><span class="line">    http://dubbo.apache.org/schema/dubbo/dubbo.xsd&quot;&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;!-- 当前Provider自定义名字 --&gt;</span><br><span class="line">    &lt;dubbo:application name=&quot;dubbo-service-consumer&quot;/&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;!-- 配置zookeeper注册中心 --&gt;</span><br><span class="line">    &lt;dubbo:registry protocol=&quot;zookeeper&quot; address=&quot;127.0.0.1:2181&quot; /&gt;</span><br><span class="line"> </span><br><span class="line">    &lt;dubbo:annotation package=&quot;com.plf.consumer.service.impl&quot;/&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;bean id=&quot;testServiceImpl&quot; </span><br><span class="line">    	class=&quot;com.plf.consumer.service.impl.ConsumerServiceImpl&quot;&gt;&lt;/bean&gt;</span><br><span class="line">&lt;/beans&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="加载配置并调用"><a href="#加载配置并调用" class="headerlink" title="加载配置并调用"></a>加载配置并调用</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</span><br><span class="line">    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">    xmlns:dubbo=&quot;http://dubbo.apache.org/schema/dubbo&quot;</span><br><span class="line">    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans        </span><br><span class="line">    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd        </span><br><span class="line">    http://dubbo.apache.org/schema/dubbo        </span><br><span class="line">    http://dubbo.apache.org/schema/dubbo/dubbo.xsd&quot;&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;!-- 当前Provider自定义名字 --&gt;</span><br><span class="line">    &lt;dubbo:application name=&quot;dubbo-service-consumer&quot;/&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;!-- 配置zookeeper注册中心 --&gt;</span><br><span class="line">    &lt;dubbo:registry protocol=&quot;zookeeper&quot; address=&quot;127.0.0.1:2181&quot; /&gt;</span><br><span class="line"> </span><br><span class="line">    &lt;dubbo:annotation package=&quot;com.plf.consumer.service.impl&quot;/&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;bean id=&quot;testServiceImpl&quot; class=&quot;com.plf.consumer.service.impl.ConsumerServiceImpl&quot;&gt;&lt;/bean&gt;</span><br><span class="line">&lt;/beans&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><h3 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h3><p>总体来说，这个Dubbo+Zookeeper快速启动项目比较简单，但是如果你觉得面向服务架构容易就错了，只是进门容易，后续各种技术需要掌握，比如分布式项目以及衍生各种相关技术支持，这只是第一步，还有更大的星辰大海等着我们去追逐。</p>
+<h3 id="小知识"><a href="#小知识" class="headerlink" title="小知识"></a>小知识</h3><h4 id="杀掉占用端口程序"><a href="#杀掉占用端口程序" class="headerlink" title="杀掉占用端口程序"></a>杀掉占用端口程序</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1、netstat -ano 查看所有端口和PID</span><br><span class="line">2、tasklist | findstr &quot;7676&quot; 通过对应的端口对应的PID找到对应的进程</span><br><span class="line">3、taskkill /f /t /im java.exe 杀掉该进程</span><br></pre></td></tr></table></figure>
+<h4 id="修改Zookeeper占用8080端口"><a href="#修改Zookeeper占用8080端口" class="headerlink" title="修改Zookeeper占用8080端口"></a>修改Zookeeper占用8080端口</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1、删除jetty。 </span><br><span class="line">2、修改端口。 在启动脚本中增加 -Dzookeeper.admin.serverPort=端口号或</span><br><span class="line">			在zoo.cfg中增加admin.serverPort=没有被占用的端口号 </span><br><span class="line">3、停用服务，在启动脚本中增加&quot;-Dzookeeper.admin.enableServer=false&quot;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Dubbo/" rel="tag"><i class="fa fa-tag"></i> Dubbo</a>
+          
+            <a href="/tags/Zookeeper/" rel="tag"><i class="fa fa-tag"></i> Zookeeper</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/12/SpringBoot集成Mybatis-Plus使用-下/" rel="next" title="SpringBoot集成Mybatis-Plus使用-下">
+                <i class="fa fa-chevron-left"></i> SpringBoot集成Mybatis-Plus使用-下
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/20/Java回调机制/" rel="prev" title="Java回调机制">
+                Java回调机制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">枫叶梨花</p>
+              <p class="site-description motion-element" itemprop="description">正在努力提高技术的小码农</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/user/5839013461ff4b007ec2d4c4/posts?sort=popular" title="枫叶梨花" target="_blank">枫叶梨花</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装Zookeeper"><span class="nav-number">1.</span> <span class="nav-text">安装Zookeeper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建Provider"><span class="nav-number">2.</span> <span class="nav-text">搭建Provider</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#定义服务接口"><span class="nav-number">2.1.</span> <span class="nav-text">定义服务接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#导入Jar包"><span class="nav-number">2.2.</span> <span class="nav-text">导入Jar包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现服务接口"><span class="nav-number">2.3.</span> <span class="nav-text">实现服务接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Spring配置声明暴露服务"><span class="nav-number">2.4.</span> <span class="nav-text">Spring配置声明暴露服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#加载配置"><span class="nav-number">2.5.</span> <span class="nav-text">加载配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动dubbo-admin观察服务"><span class="nav-number">2.6.</span> <span class="nav-text">启动dubbo-admin观察服务</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#后端"><span class="nav-number">2.6.1.</span> <span class="nav-text">后端</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#前端"><span class="nav-number">2.6.2.</span> <span class="nav-text">前端</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#总结"><span class="nav-number">2.6.3.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建Consumer"><span class="nav-number">3.</span> <span class="nav-text">搭建Consumer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#导入Jar包-1"><span class="nav-number">3.1.</span> <span class="nav-text">导入Jar包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义消费接口"><span class="nav-number">3.2.</span> <span class="nav-text">定义消费接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现消费接口"><span class="nav-number">3.3.</span> <span class="nav-text">实现消费接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Spring配置"><span class="nav-number">3.4.</span> <span class="nav-text">Spring配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#加载配置并调用"><span class="nav-number">3.5.</span> <span class="nav-text">加载配置并调用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结-1"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结-2"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小知识"><span class="nav-number">6.</span> <span class="nav-text">小知识</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#杀掉占用端口程序"><span class="nav-number">6.1.</span> <span class="nav-text">杀掉占用端口程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改Zookeeper占用8080端口"><span class="nav-number">6.2.</span> <span class="nav-text">修改Zookeeper占用8080端口</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫叶梨花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">88.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

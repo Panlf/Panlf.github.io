@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="MyBatis,SpringBoot,ShardingSphere,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="系统开发中，对于数据量特别多的时候我们会采用分库分表方案，我发现比较热门的工具就是Sharding-JDBC，文档也比较齐全，所以刚好学习一下。">
+<meta name="keywords" content="MyBatis,SpringBoot,ShardingSphere">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot集成ShardingSphere和MyBatis">
+<meta property="og:url" content="http://yoursite.com/2019/06/12/SpringBoot集成ShardingSphere和MyBatis/index.html">
+<meta property="og:site_name" content="梦起飞">
+<meta property="og:description" content="系统开发中，对于数据量特别多的时候我们会采用分库分表方案，我发现比较热门的工具就是Sharding-JDBC，文档也比较齐全，所以刚好学习一下。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-06-12T07:40:41.161Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot集成ShardingSphere和MyBatis">
+<meta name="twitter:description" content="系统开发中，对于数据量特别多的时候我们会采用分库分表方案，我发现比较热门的工具就是Sharding-JDBC，文档也比较齐全，所以刚好学习一下。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/06/12/SpringBoot集成ShardingSphere和MyBatis/">
+
+
+
+
+
+  <title>SpringBoot集成ShardingSphere和MyBatis | 梦起飞</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梦起飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天行健，君子以自强不息</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/12/SpringBoot集成ShardingSphere和MyBatis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="枫叶梨花">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梦起飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringBoot集成ShardingSphere和MyBatis</h1>
+        
+
+        <div class="post-meta">
+			
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-12T14:57:46+08:00">
+                2019-06-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/分库分表/" itemprop="url" rel="index">
+                    <span itemprop="name">分库分表</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,560
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>系统开发中，对于数据量特别多的时候我们会采用分库分表方案，我发现比较热门的工具就是Sharding-JDBC，文档也比较齐全，所以刚好学习一下。<br><a id="more"></a></p>
+<blockquote>
+<p>ShardingSphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（计划中）这3款相互独立的产品组成。</p>
+</blockquote>
+<p>ShardingSphere目前在Apache下孵化，<a href="https://github.com/apache/incubator-shardingsphere" target="_blank" rel="noopener">Github地址</a>、<a href="https://shardingsphere.apache.org/index_zh.html" target="_blank" rel="noopener">官网地址</a>，里面有详细的文档，该篇学习博客即参考以上资料。</p>
+<h3 id="技术要点"><a href="#技术要点" class="headerlink" title="技术要点"></a>技术要点</h3><ul>
+<li>数据库 -  MySQL5.7</li>
+<li>SpringBoot - 2.1.4.RELEASE</li>
+<li>MyBatis</li>
+<li>sharding-jdbc-core - 4.0.0-RC1</li>
+</ul>
+<h3 id="Jar包"><a href="#Jar包" class="headerlink" title="Jar包"></a>Jar包</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&quot;org.apache.shardingsphere:sharding-jdbc-core:4.0.0-RC1&quot;</span><br><span class="line"></span><br><span class="line">&quot;org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.1&quot;</span><br><span class="line"></span><br><span class="line">&quot;mysql:mysql-connector-java:8.0.16&quot;</span><br><span class="line"></span><br><span class="line">&quot;org.projectlombok:lombok:1.16.20&quot;</span><br><span class="line"></span><br><span class="line">&quot;org.springframework.boot:spring-boot-starter-web:2.1.4.RELEASE&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="SQL文件"><a href="#SQL文件" class="headerlink" title="SQL文件"></a>SQL文件</h3><p>因为没有自动建表功能需要提前建完表</p>
+<h4 id="ds0-sql"><a href="#ds0-sql" class="headerlink" title="ds0.sql"></a>ds0.sql</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">SET FOREIGN_KEY_CHECKS=0;</span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Table structure for t_order_0</span><br><span class="line">-- ----------------------------</span><br><span class="line">DROP TABLE IF EXISTS `t_order_0`;</span><br><span class="line">CREATE TABLE `t_order_0` (</span><br><span class="line">  `id` bigint(30) NOT NULL,</span><br><span class="line">  `order_id` bigint(30) DEFAULT NULL,</span><br><span class="line">  `user_id` bigint(30) DEFAULT NULL,</span><br><span class="line">  `username` varchar(20) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;</span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Table structure for t_order_1</span><br><span class="line">-- ----------------------------</span><br><span class="line">DROP TABLE IF EXISTS `t_order_1`;</span><br><span class="line">CREATE TABLE `t_order_1` (</span><br><span class="line">  `id` bigint(30) NOT NULL,</span><br><span class="line">  `order_id` bigint(30) DEFAULT NULL,</span><br><span class="line">  `user_id` bigint(30) DEFAULT NULL,</span><br><span class="line">  `username` varchar(20) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;</span><br></pre></td></tr></table></figure>
+<h4 id="ds1-sql"><a href="#ds1-sql" class="headerlink" title="ds1.sql"></a>ds1.sql</h4><p>同上</p>
+<h3 id="Java程序"><a href="#Java程序" class="headerlink" title="Java程序"></a>Java程序</h3><h4 id="application-yml配置文件"><a href="#application-yml配置文件" class="headerlink" title="application.yml配置文件"></a>application.yml配置文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  shardingsphere:</span><br><span class="line">    datasource:</span><br><span class="line">      names:  ds0,ds1</span><br><span class="line">      ds0:</span><br><span class="line">        driver-class-name: com.mysql.cj.jdbc.Driver</span><br><span class="line">        jdbc-url: jdbc:mysql://localhost:3306/ds0?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=true&amp;serverTimezone=GMT%2B8</span><br><span class="line">        username: root</span><br><span class="line">        password: root</span><br><span class="line">      ds1:</span><br><span class="line">        driver-class-name: com.mysql.cj.jdbc.Driver</span><br><span class="line">        jdbc-url: jdbc:mysql://localhost:3306/ds1?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=true&amp;serverTimezone=GMT%2B8</span><br><span class="line">        username: root</span><br><span class="line">        password: root</span><br><span class="line">    sharding:</span><br><span class="line">      default-database-strategy:</span><br><span class="line">        inline:</span><br><span class="line">          sharding-column: user_id</span><br><span class="line">          algorithm-expression: ds$-&gt;&#123;user_id % 2&#125;</span><br><span class="line">      tables:</span><br><span class="line">        t_order:</span><br><span class="line">          actual-data-nodes:  ds$-&gt;&#123;0..1&#125;.t_order_$-&gt;&#123;0..1&#125;</span><br><span class="line">          table-strategy:</span><br><span class="line">            inline:</span><br><span class="line">              sharding-column:  order_id</span><br><span class="line">              algorithm-expression: t_order_$-&gt;&#123;order_id % 2&#125;</span><br><span class="line">          key-generator:</span><br><span class="line">            column: order_id</span><br><span class="line">            type: SNOWFLAKE</span><br><span class="line">            props:</span><br><span class="line">              worker:</span><br><span class="line">                id: 123</span><br><span class="line">              sql:</span><br><span class="line">                show: true</span><br></pre></td></tr></table></figure>
+<p>更多信息可以访问官网 - <a href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/config-spring-boot/" target="_blank" rel="noopener">SPRING BOOT配置</a>，详细的更多配置和解释都有。</p>
+<h4 id="数据源配置"><a href="#数据源配置" class="headerlink" title="数据源配置"></a>数据源配置</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line">package com.plf.learn.sharding.config;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import lombok.extern.slf4j.Slf4j;</span><br><span class="line">import org.apache.ibatis.session.SqlSessionFactory;</span><br><span class="line">import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;</span><br><span class="line">import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;</span><br><span class="line">import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;</span><br><span class="line"></span><br><span class="line">import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;</span><br><span class="line">import org.mybatis.spring.SqlSessionFactoryBean;</span><br><span class="line">import org.mybatis.spring.annotation.MapperScan;</span><br><span class="line">import org.springframework.boot.context.properties.ConfigurationProperties;</span><br><span class="line">import org.springframework.boot.jdbc.DataSourceBuilder;</span><br><span class="line">import org.springframework.context.annotation.Bean;</span><br><span class="line">import org.springframework.context.annotation.Configuration;</span><br><span class="line">import org.springframework.jdbc.datasource.DataSourceTransactionManager;</span><br><span class="line"></span><br><span class="line">import javax.sql.DataSource;</span><br><span class="line">import java.sql.SQLException;</span><br><span class="line">import java.util.Properties;</span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import java.util.Map;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/6/12</span><br><span class="line"> */</span><br><span class="line">@Configuration</span><br><span class="line">@Slf4j</span><br><span class="line">@MapperScan(basePackages = &quot;com.plf.learn.sharding.mapper&quot;,sqlSessionFactoryRef = &quot;sessionFactory&quot;)</span><br><span class="line">public class DataSourceConfig &#123;</span><br><span class="line"></span><br><span class="line">    /*@Bean</span><br><span class="line">    @ConfigurationProperties(prefix = &quot;mybatis.configuration&quot;)</span><br><span class="line">    public org.apache.ibatis.session.Configuration configuration()&#123;</span><br><span class="line">        org.apache.ibatis.session.Configuration configuration =  new org.apache.ibatis.session.Configuration();</span><br><span class="line">        configuration.setMapUnderscoreToCamelCase(true);</span><br><span class="line">        return configuration;</span><br><span class="line">    &#125;*/</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 配置数据源0，数据源的名称最好要有一定的规则，方便配置分库的计算规则</span><br><span class="line">     *</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    @Bean(name = &quot;dataSource0&quot;)</span><br><span class="line">    @ConfigurationProperties(prefix = &quot;spring.shardingsphere.datasource.ds0&quot;)</span><br><span class="line">    public DataSource dataSource0() &#123;</span><br><span class="line">        return DataSourceBuilder.create().build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 配置数据源1，数据源的名称最好要有一定的规则，方便配置分库的计算规则</span><br><span class="line">     *</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    @Bean(name = &quot;dataSource1&quot;)</span><br><span class="line">    @ConfigurationProperties(prefix = &quot;spring.shardingsphere.datasource.ds1&quot;)</span><br><span class="line">    public DataSource dataSource1() &#123;</span><br><span class="line">        return DataSourceBuilder.create().build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Bean</span><br><span class="line">    public SqlSessionFactory sessionFactory(DataSource dataSource) throws Exception &#123;</span><br><span class="line">        final SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();</span><br><span class="line">        sessionFactory.setDataSource(dataSource);</span><br><span class="line">        sessionFactory.setTypeAliasesPackage(&quot;com.plf.learn.sharding.bean&quot;);</span><br><span class="line"></span><br><span class="line">        org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();</span><br><span class="line">        configuration.setMapUnderscoreToCamelCase(true);</span><br><span class="line">        sessionFactory.setConfiguration(configuration);</span><br><span class="line"></span><br><span class="line">        return sessionFactory.getObject();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Bean</span><br><span class="line">    public DataSource dataSource() throws SQLException &#123;</span><br><span class="line"></span><br><span class="line">        // 配置分片规则</span><br><span class="line">        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();</span><br><span class="line"></span><br><span class="line">        // 配置真实数据源</span><br><span class="line">        Map&lt;String, DataSource&gt; dataSourceMap = new HashMap&lt;&gt;();</span><br><span class="line">        dataSourceMap.put(&quot;ds0&quot;, dataSource0());</span><br><span class="line">        dataSourceMap.put(&quot;ds1&quot;, dataSource1());</span><br><span class="line"></span><br><span class="line">        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration(&quot;t_order&quot;, &quot;ds$&#123;0..1&#125;.t_order_$&#123;0..1&#125;&quot;);</span><br><span class="line">        // 配置分库 + 分表策略</span><br><span class="line">        orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(&quot;user_id&quot;, &quot;ds$&#123;user_id % 2&#125;&quot;));</span><br><span class="line">        orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration(&quot;order_id&quot;, &quot;t_order_$&#123;order_id % 2&#125;&quot;));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        // 获取数据源对象</span><br><span class="line">        DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new Properties());</span><br><span class="line">        return dataSource;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Bean</span><br><span class="line">    public DataSourceTransactionManager shardTransactionManager(DataSource dataSource) &#123;</span><br><span class="line">        return new DataSourceTransactionManager(dataSource);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为使用了<code>Sharding-JDBC</code>，所以使用<code>Mybatis</code>的时候需要重新配置<code>SqlSessionFactory</code>，当然<code>org.apache.ibatis.session.Configuration</code>也需要重新配置，不然不起作用。</p>
+<h4 id="业务代码"><a href="#业务代码" class="headerlink" title="业务代码"></a>业务代码</h4><p>Bean<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import lombok.Data;</span><br><span class="line">import org.apache.ibatis.type.Alias;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/6/12</span><br><span class="line"> */</span><br><span class="line">@Data</span><br><span class="line">@Alias(&quot;t_order&quot;)</span><br><span class="line">public class Order &#123;</span><br><span class="line">    private Long id;</span><br><span class="line">    private Long orderId;</span><br><span class="line">    private Long userId;</span><br><span class="line">    private String username;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Mapper<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">import com.plf.learn.sharding.bean.Order;</span><br><span class="line">import org.apache.ibatis.annotations.Insert;</span><br><span class="line">import org.apache.ibatis.annotations.Mapper;</span><br><span class="line">import org.apache.ibatis.annotations.Param;</span><br><span class="line">import org.apache.ibatis.annotations.Select;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/6/12</span><br><span class="line"> */</span><br><span class="line">@Mapper</span><br><span class="line">public interface OrderMapper &#123;</span><br><span class="line"></span><br><span class="line">    @Insert(&quot;insert into t_order values(#&#123;id&#125;,#&#123;orderId&#125;,#&#123;userId&#125;,#&#123;username&#125;)&quot;)</span><br><span class="line">    public void insertOrder(Order order);</span><br><span class="line"></span><br><span class="line">    @Select(&quot;select * from t_order where id=#&#123;id&#125;&quot;)</span><br><span class="line">    public Order findById(@Param(&quot;id&quot;) long id);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Service<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">import com.plf.learn.sharding.bean.Order;</span><br><span class="line">import com.plf.learn.sharding.mapper.OrderMapper;</span><br><span class="line">import org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line">import org.springframework.stereotype.Service;</span><br><span class="line">import org.springframework.transaction.annotation.Transactional;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/6/12</span><br><span class="line"> */</span><br><span class="line">@Service</span><br><span class="line">public class OrderService &#123;</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    private OrderMapper orderMapper;</span><br><span class="line"></span><br><span class="line">    @Transactional(rollbackFor = Exception.class)</span><br><span class="line">    public void save(Order order)&#123;</span><br><span class="line">        orderMapper.insertOrder(order);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Order findById(Long id)&#123;</span><br><span class="line">        return orderMapper.findById(id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Controller<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">import com.plf.learn.sharding.bean.Order;</span><br><span class="line">import com.plf.learn.sharding.service.OrderService;</span><br><span class="line">import org.apache.shardingsphere.core.strategy.keygen.SnowflakeShardingKeyGenerator;</span><br><span class="line">import org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line">import org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line">import org.springframework.web.bind.annotation.PostMapping;</span><br><span class="line">import org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line">import org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/6/12</span><br><span class="line"> */</span><br><span class="line">@RestController</span><br><span class="line">@RequestMapping(&quot;order&quot;)</span><br><span class="line">public class OrderController &#123;</span><br><span class="line"></span><br><span class="line">    final SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    private OrderService orderService;</span><br><span class="line"></span><br><span class="line">    @PostMapping(&quot;save&quot;)</span><br><span class="line">    public String save(Order order)&#123;</span><br><span class="line">        String keyId = keyGenerator.generateKey().toString();</span><br><span class="line">        long id = Long.valueOf(keyId);</span><br><span class="line">        order.setId(id);</span><br><span class="line">        orderService.save(order);</span><br><span class="line">        return &quot;success&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @GetMapping(&quot;findById&quot;)</span><br><span class="line">    public Order findById(Long id)&#123;</span><br><span class="line">        return orderService.findById(id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>完整代码，可访问我的<a href="https://github.com/Panlf/springboot-learn" target="_blank" rel="noopener">Github</a>.</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>ShardingSphere功能非常强大也繁多，需要更加深入的学习和实践使用，本文只是作为入门案例学习，更多功能可以访问官网。当我在实践中深入使用也会继续分享心得。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MyBatis/" rel="tag"><i class="fa fa-tag"></i> MyBatis</a>
+          
+            <a href="/tags/SpringBoot/" rel="tag"><i class="fa fa-tag"></i> SpringBoot</a>
+          
+            <a href="/tags/ShardingSphere/" rel="tag"><i class="fa fa-tag"></i> ShardingSphere</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/03/MySQL的Explain详解/" rel="next" title="MySQL的Explain详解">
+                <i class="fa fa-chevron-left"></i> MySQL的Explain详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/07/Mariadb在Windows上配置主从复制/" rel="prev" title="Mariadb在Windows上配置主从复制">
+                Mariadb在Windows上配置主从复制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">枫叶梨花</p>
+              <p class="site-description motion-element" itemprop="description">正在努力提高技术的小码农</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/user/5839013461ff4b007ec2d4c4/posts?sort=popular" title="枫叶梨花" target="_blank">枫叶梨花</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#技术要点"><span class="nav-number">1.</span> <span class="nav-text">技术要点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jar包"><span class="nav-number">2.</span> <span class="nav-text">Jar包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL文件"><span class="nav-number">3.</span> <span class="nav-text">SQL文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ds0-sql"><span class="nav-number">3.1.</span> <span class="nav-text">ds0.sql</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ds1-sql"><span class="nav-number">3.2.</span> <span class="nav-text">ds1.sql</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java程序"><span class="nav-number">4.</span> <span class="nav-text">Java程序</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#application-yml配置文件"><span class="nav-number">4.1.</span> <span class="nav-text">application.yml配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据源配置"><span class="nav-number">4.2.</span> <span class="nav-text">数据源配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#业务代码"><span class="nav-number">4.3.</span> <span class="nav-text">业务代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫叶梨花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">88.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

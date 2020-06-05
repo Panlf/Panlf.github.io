@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="微服务,Eureka,Ribbon,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="SpringCloud集成Eureka和Ribbon，Eureka为注册中心，用于服务发现、配置和健康监测，Ribbon是NetFlix发布的一个负载均衡器。Eureka内部集成了Ribbon，所以一般配合Eureka使用，Ribbon提供了客户端负载均衡的功能，Ribbon利用从Eureka中读取到的服务信息，在调用服务节点提供服务时，会合理的进行负载。">
+<meta name="keywords" content="微服务,Eureka,Ribbon">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringCloud教程系列-Eureka、Ribbon">
+<meta property="og:url" content="http://yoursite.com/2019/12/17/SpringCloud教程系列-Eureka、Ribbon/index.html">
+<meta property="og:site_name" content="梦起飞">
+<meta property="og:description" content="SpringCloud集成Eureka和Ribbon，Eureka为注册中心，用于服务发现、配置和健康监测，Ribbon是NetFlix发布的一个负载均衡器。Eureka内部集成了Ribbon，所以一般配合Eureka使用，Ribbon提供了客户端负载均衡的功能，Ribbon利用从Eureka中读取到的服务信息，在调用服务节点提供服务时，会合理的进行负载。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-18T07:12:00.995Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringCloud教程系列-Eureka、Ribbon">
+<meta name="twitter:description" content="SpringCloud集成Eureka和Ribbon，Eureka为注册中心，用于服务发现、配置和健康监测，Ribbon是NetFlix发布的一个负载均衡器。Eureka内部集成了Ribbon，所以一般配合Eureka使用，Ribbon提供了客户端负载均衡的功能，Ribbon利用从Eureka中读取到的服务信息，在调用服务节点提供服务时，会合理的进行负载。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/12/17/SpringCloud教程系列-Eureka、Ribbon/">
+
+
+
+
+
+  <title>SpringCloud教程系列-Eureka、Ribbon | 梦起飞</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梦起飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天行健，君子以自强不息</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/17/SpringCloud教程系列-Eureka、Ribbon/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="枫叶梨花">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梦起飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringCloud教程系列-Eureka、Ribbon</h1>
+        
+
+        <div class="post-meta">
+			
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-17T10:33:35+08:00">
+                2019-12-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SpringCloud/" itemprop="url" rel="index">
+                    <span itemprop="name">SpringCloud</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3,292
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  18
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>SpringCloud集成Eureka和Ribbon，Eureka为注册中心，用于服务发现、配置和健康监测，Ribbon是NetFlix发布的一个负载均衡器。Eureka内部集成了Ribbon，所以一般配合Eureka使用，Ribbon提供了客户端负载均衡的功能，Ribbon利用从Eureka中读取到的服务信息，在调用服务节点提供服务时，会合理的进行负载。<br><a id="more"></a></p>
+<h3 id="搭建基本环境"><a href="#搭建基本环境" class="headerlink" title="搭建基本环境"></a>搭建基本环境</h3><h4 id="父项目搭建"><a href="#父项目搭建" class="headerlink" title="父项目搭建"></a>父项目搭建</h4><p>本博客使用IDEA所谓开发环境，某些细节与其他IDE操作不一致。</p>
+<p>1、新建Maven项目-springcloud-learn，因为为父项目，不需要代码，删除src目录。</p>
+<p>2、修改pom文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;</span><br><span class="line">         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;</span><br><span class="line">    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</span><br><span class="line"></span><br><span class="line">    &lt;groupId&gt;com.learn&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springcloud-learn&lt;/artifactId&gt;</span><br><span class="line">    &lt;packaging&gt;pom&lt;/packaging&gt;</span><br><span class="line">    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;</span><br><span class="line"></span><br><span class="line">    &lt;modules&gt;</span><br><span class="line">        &lt;module&gt;springcloud-dept-service&lt;/module&gt;</span><br><span class="line">        &lt;module&gt;springcloud-eureka-server-first&lt;/module&gt;</span><br><span class="line">        &lt;module&gt;springcloud-employee-service&lt;/module&gt;</span><br><span class="line">        &lt;module&gt;springcloud-eureka-server-second&lt;/module&gt;</span><br><span class="line">    &lt;/modules&gt;</span><br><span class="line"></span><br><span class="line">    &lt;parent&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;</span><br><span class="line">        &lt;version&gt;2.1.6.RELEASE&lt;/version&gt;</span><br><span class="line">        &lt;relativePath/&gt;</span><br><span class="line">    &lt;/parent&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- 公共Jar包管理  --&gt;</span><br><span class="line">    &lt;dependencies&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;lombok&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">    &lt;/dependencies&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &lt;dependencyManagement&gt;</span><br><span class="line">        &lt;dependencies&gt;</span><br><span class="line">            &lt;dependency&gt;</span><br><span class="line">                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">                &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;</span><br><span class="line">                &lt;version&gt;2.1.6.RELEASE&lt;/version&gt;</span><br><span class="line">            &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">            &lt;dependency&gt;</span><br><span class="line">                &lt;groupId&gt;mysql&lt;/groupId&gt;</span><br><span class="line">                &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;</span><br><span class="line">                &lt;version&gt;8.0.15&lt;/version&gt;</span><br><span class="line">            &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">            &lt;dependency&gt;</span><br><span class="line">                &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">                &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;</span><br><span class="line">                &lt;version&gt;Greenwich.RELEASE&lt;/version&gt;</span><br><span class="line">                &lt;type&gt;pom&lt;/type&gt;</span><br><span class="line">                &lt;scope&gt;import&lt;/scope&gt;</span><br><span class="line">            &lt;/dependency&gt;</span><br><span class="line">        &lt;/dependencies&gt;</span><br><span class="line">    &lt;/dependencyManagement&gt;</span><br><span class="line">&lt;/project&gt;</span><br></pre></td></tr></table></figure>
+<p>使用SpringCloud的Greenwich版本，SpringBoot为2.1.6版本。</p>
+<h4 id="搭建Eureka集群服务端"><a href="#搭建Eureka集群服务端" class="headerlink" title="搭建Eureka集群服务端"></a>搭建Eureka集群服务端</h4><p>新建两个Module的Maven项目，<code>springcloud-eureka-server-first</code>、<code>springcloud-eureka-server-second</code>在本机搭建Eureka的集群模式。</p>
+<p>1、pom.xml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;</span><br><span class="line">         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;</span><br><span class="line">    &lt;parent&gt;</span><br><span class="line">        &lt;artifactId&gt;springcloud-learn&lt;/artifactId&gt;</span><br><span class="line">        &lt;groupId&gt;com.learn&lt;/groupId&gt;</span><br><span class="line">        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;</span><br><span class="line">    &lt;/parent&gt;</span><br><span class="line">    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</span><br><span class="line"></span><br><span class="line">    &lt;artifactId&gt;springcloud-eureka-server-first&lt;/artifactId&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependencies&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">    &lt;/dependencies&gt;</span><br><span class="line">&lt;/project&gt;</span><br></pre></td></tr></table></figure>
+<p>2、application.yml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">server:</span><br><span class="line">  port: 9000</span><br><span class="line"></span><br><span class="line">spring:</span><br><span class="line">  application:</span><br><span class="line">    name: eureka-server</span><br><span class="line"></span><br><span class="line"># 配置eureka server</span><br><span class="line">eureka:</span><br><span class="line">  instance:</span><br><span class="line">    hostname: localhost</span><br><span class="line">  client:</span><br><span class="line">    # 是否将自己注册到注册中心</span><br><span class="line">    register-with-eureka: true</span><br><span class="line">    # 是否从eureka中获取注册信息</span><br><span class="line">    fetch-registry: false</span><br><span class="line">    # 配置暴露给Eureka Client的请求地址</span><br><span class="line">    service-url:</span><br><span class="line">      defaultZone: http://localhost:9010/eureka/</span><br><span class="line">  #server:</span><br><span class="line">    # 关闭自我保护</span><br><span class="line">  # enable-self-preservation: false</span><br><span class="line">    # 剔除服务间隔</span><br><span class="line">  # eviction-interval-timer-in-ms: 4000</span><br></pre></td></tr></table></figure>
+<p>两个配置文件主要是端口不同，然后互相注册。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">server:</span><br><span class="line">  port: 9010</span><br><span class="line"></span><br><span class="line">spring:</span><br><span class="line">  application:</span><br><span class="line">    name: eureka-server</span><br><span class="line"></span><br><span class="line"># 配置eureka server</span><br><span class="line">eureka:</span><br><span class="line">  instance:</span><br><span class="line">    hostname: localhost</span><br><span class="line">  client:</span><br><span class="line">    # 是否将自己注册到注册中心</span><br><span class="line">    register-with-eureka: true</span><br><span class="line">    # 是否从eureka中获取注册信息</span><br><span class="line">    fetch-registry: false</span><br><span class="line">    # 配置暴露给Eureka Client的请求地址</span><br><span class="line">    service-url:</span><br><span class="line">      defaultZone: http://localhost:9000/eureka/</span><br></pre></td></tr></table></figure></p>
+<p>3、启动</p>
+<p>第一个启动类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">package com.learn.eureka.server.first;</span><br><span class="line"></span><br><span class="line">import org.springframework.boot.SpringApplication;</span><br><span class="line">import org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line">import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/16</span><br><span class="line"> */</span><br><span class="line">@EnableEurekaServer</span><br><span class="line">@SpringBootApplication</span><br><span class="line">public class EurekaServerFirstApplication &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SpringApplication.run(EurekaServerFirstApplication.class,args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>第二个启动类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">package com.learn.eureka.server.second;</span><br><span class="line"></span><br><span class="line">import org.springframework.boot.SpringApplication;</span><br><span class="line">import org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line">import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/16</span><br><span class="line"> */</span><br><span class="line">@EnableEurekaServer</span><br><span class="line">@SpringBootApplication</span><br><span class="line">public class EurekaServerSecondApplication &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SpringApplication.run(EurekaServerSecondApplication.class,args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>分别启动两个Eureka Server，然后实现Eureka Server的集群模式。不过这里我遇到一个问题，就是Eureka Server不能注册自己的服务，只能注册对方的服务，而且集群是生产者、消费者也是只注册在一个服务上，只有一个服务宕机了，才会把服务重新注册到另一个服务上，不清楚是不是因为Eureka的版本问题，还是我自己配置问题，存疑。</p>
+<h4 id="搭建生产者项目"><a href="#搭建生产者项目" class="headerlink" title="搭建生产者项目"></a>搭建生产者项目</h4><p>在springcloud-learn目录下新建Module的Maven项目 - springcloud-dept-service。</p>
+<p>1、pom.xml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;</span><br><span class="line">         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;</span><br><span class="line">    &lt;parent&gt;</span><br><span class="line">        &lt;artifactId&gt;springcloud-learn&lt;/artifactId&gt;</span><br><span class="line">        &lt;groupId&gt;com.learn&lt;/groupId&gt;</span><br><span class="line">        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;</span><br><span class="line">    &lt;/parent&gt;</span><br><span class="line">    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</span><br><span class="line"></span><br><span class="line">    &lt;artifactId&gt;springcloud-dept-service&lt;/artifactId&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependencies&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;mysql&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">        &lt;!-- SpringCloud整合Eureka的客户端 --&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">    &lt;/dependencies&gt;</span><br><span class="line">&lt;/project&gt;</span><br></pre></td></tr></table></figure>
+<p>2、application.yml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">server:</span><br><span class="line">  port: 8000</span><br><span class="line">  servlet:</span><br><span class="line">    context-path: /dept</span><br><span class="line"></span><br><span class="line"># 整合JPA、MySQL</span><br><span class="line">spring:</span><br><span class="line">  datasource:</span><br><span class="line">    url:  jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=true&amp;serverTimezone=GMT%2B8</span><br><span class="line">    username: root</span><br><span class="line">    password: root</span><br><span class="line">    driver-class-name: com.mysql.cj.jdbc.Driver</span><br><span class="line">  jpa:</span><br><span class="line">    database: MYSQL</span><br><span class="line">    show-sql: true</span><br><span class="line">    hibernate:</span><br><span class="line">      ddl-auto: update</span><br><span class="line">      naming:</span><br><span class="line">        physical-strategy:  org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy</span><br><span class="line">    database-platform:  org.hibernate.dialect.MySQL5InnoDBDialect</span><br><span class="line">  application:</span><br><span class="line">    name: dept-service</span><br><span class="line"></span><br><span class="line"># Eureka服务注册</span><br><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    service-url:</span><br><span class="line">      defaultZone:  http://localhost:9000/eureka/,http://localhost:9010/eureka/</span><br><span class="line">  instance:</span><br><span class="line">    # 使用IP地址注册</span><br><span class="line">    prefer-ip-address: true</span><br><span class="line">    # 向注册中心注册服务id</span><br><span class="line">    instance-id: $&#123;spring.cloud.client.ip-address&#125;:$&#123;server.port&#125;</span><br><span class="line">    # 发送心跳间隔</span><br><span class="line">    lease-renewal-interval-in-seconds: 5</span><br><span class="line">    # 续约到期时间</span><br><span class="line">    lease-expiration-duration-in-seconds: 10</span><br></pre></td></tr></table></figure></p>
+<p>3、数据访问程序</p>
+<p>数据模型类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">package com.learn.dept.entity;</span><br><span class="line"></span><br><span class="line">import lombok.Data;</span><br><span class="line"></span><br><span class="line">import javax.persistence.Entity;</span><br><span class="line">import javax.persistence.Id;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/16</span><br><span class="line"> */</span><br><span class="line">@Data</span><br><span class="line">@Entity(name=&quot;dept&quot;)</span><br><span class="line">public class Dept &#123;</span><br><span class="line">    @Id</span><br><span class="line">    private Integer id;</span><br><span class="line"></span><br><span class="line">    private String deptName;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>数据持久类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package com.learn.dept.dao;</span><br><span class="line"></span><br><span class="line">import com.learn.dept.entity.Dept;</span><br><span class="line">import org.springframework.data.jpa.repository.JpaRepository;</span><br><span class="line">import org.springframework.data.jpa.repository.JpaSpecificationExecutor;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/16</span><br><span class="line"> */</span><br><span class="line">public interface DeptDao extends JpaRepository&lt;Dept, Integer&gt;,JpaSpecificationExecutor&lt;Dept&gt; &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>数据服务类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">package com.learn.dept.service;</span><br><span class="line"></span><br><span class="line">import com.learn.dept.entity.Dept;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/16</span><br><span class="line"> */</span><br><span class="line">public interface DeptService &#123;</span><br><span class="line">    /**</span><br><span class="line">     * 根据ID查询</span><br><span class="line">     * @param id</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    Dept findById(Integer id);</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 保存</span><br><span class="line">     * @param dept</span><br><span class="line">     */</span><br><span class="line">    void save(Dept dept);</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 更新</span><br><span class="line">     * @param dept</span><br><span class="line">     */</span><br><span class="line">    void update(Dept dept);</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 根据ID删除</span><br><span class="line">     * @param id</span><br><span class="line">     */</span><br><span class="line">    void delete(Integer id);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>数据服务实现类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">package com.learn.dept.service.impl;</span><br><span class="line"></span><br><span class="line">import com.learn.dept.dao.DeptDao;</span><br><span class="line">import com.learn.dept.entity.Dept;</span><br><span class="line">import com.learn.dept.service.DeptService;</span><br><span class="line">import lombok.extern.slf4j.Slf4j;</span><br><span class="line">import org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line">import org.springframework.beans.factory.annotation.Value;</span><br><span class="line">import org.springframework.stereotype.Service;</span><br><span class="line"></span><br><span class="line">import java.util.Optional;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/16</span><br><span class="line"> */</span><br><span class="line">@Service</span><br><span class="line">@Slf4j</span><br><span class="line">public class DeptServiceImpl implements DeptService &#123;</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    private DeptDao deptDao;</span><br><span class="line"></span><br><span class="line">    @Value(&quot;$&#123;server.port&#125;&quot;)</span><br><span class="line">    private int port;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Dept findById(Integer id) &#123;</span><br><span class="line">        log.info(&quot;目前接口访问的端口为&#123;&#125;&quot;,port);</span><br><span class="line">        Optional&lt;Dept&gt; optionCity = deptDao.findById(id);</span><br><span class="line">        return optionCity.get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void save(Dept dept) &#123;</span><br><span class="line">        deptDao.save(dept);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void update(Dept dept) &#123;</span><br><span class="line">        deptDao.save(dept);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void delete(Integer id) &#123;</span><br><span class="line">        deptDao.deleteById(id);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>数据控制类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">package com.learn.dept.controller;</span><br><span class="line"></span><br><span class="line">import com.learn.dept.entity.Dept;</span><br><span class="line">import com.learn.dept.service.DeptService;</span><br><span class="line">import org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line">import org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line">import org.springframework.web.bind.annotation.PathVariable;</span><br><span class="line">import org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/16</span><br><span class="line"> */</span><br><span class="line">@RestController</span><br><span class="line">public class DeptController &#123;</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    private DeptService deptService;</span><br><span class="line"></span><br><span class="line">    @GetMapping(value=&quot;get/&#123;id&#125;&quot;)</span><br><span class="line">    public Dept findById(@PathVariable Integer id) &#123;</span><br><span class="line">        Dept dept = deptService.findById(id);</span><br><span class="line">        return dept;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>程序启动类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">package com.learn.dept;</span><br><span class="line"></span><br><span class="line">import org.springframework.boot.SpringApplication;</span><br><span class="line">import org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line">import org.springframework.cloud.netflix.eureka.EnableEurekaClient;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/16</span><br><span class="line"> */</span><br><span class="line">@SpringBootApplication</span><br><span class="line">@EnableEurekaClient</span><br><span class="line">public class DeptServiceApplication &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SpringApplication.run(DeptServiceApplication.class,args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>生产者就是通过访问数据库提供数据。</p>
+<h4 id="搭建消费者项目"><a href="#搭建消费者项目" class="headerlink" title="搭建消费者项目"></a>搭建消费者项目</h4><p>新建两个Module的Maven项目 - springcloud-employee-service。</p>
+<p>1、pom.xml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;</span><br><span class="line">         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;</span><br><span class="line">    &lt;parent&gt;</span><br><span class="line">        &lt;artifactId&gt;springcloud-learn&lt;/artifactId&gt;</span><br><span class="line">        &lt;groupId&gt;com.learn&lt;/groupId&gt;</span><br><span class="line">        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;</span><br><span class="line">    &lt;/parent&gt;</span><br><span class="line">    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</span><br><span class="line"></span><br><span class="line">    &lt;artifactId&gt;springcloud-employee-service&lt;/artifactId&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependencies&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;mysql&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">        &lt;!-- SpringCloud 整合 Eureka --&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">        &lt;!-- 依赖生产者 --&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;com.learn&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;springcloud-dept-service&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">        &lt;!-- 重试机制 --&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.retry&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-retry&lt;/artifactId&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">    &lt;/dependencies&gt;</span><br><span class="line">&lt;/project&gt;</span><br></pre></td></tr></table></figure>
+<p>2、application.yml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">server:</span><br><span class="line">  port: 8001</span><br><span class="line">  servlet:</span><br><span class="line">    context-path: /employee</span><br><span class="line"></span><br><span class="line">spring:</span><br><span class="line">  datasource:</span><br><span class="line">    url:  jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=true&amp;serverTimezone=GMT%2B8</span><br><span class="line">    username: root</span><br><span class="line">    password: root</span><br><span class="line">    driver-class-name: com.mysql.cj.jdbc.Driver</span><br><span class="line">  jpa:</span><br><span class="line">    database: MYSQL</span><br><span class="line">    show-sql: true</span><br><span class="line">    hibernate:</span><br><span class="line">      ddl-auto: update</span><br><span class="line">      naming:</span><br><span class="line">        physical-strategy:  org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy</span><br><span class="line">    database-platform:  org.hibernate.dialect.MySQL5InnoDBDialect</span><br><span class="line">  application:</span><br><span class="line">    name: employee-service</span><br><span class="line"></span><br><span class="line"># 服务注册</span><br><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    service-url:</span><br><span class="line">      defaultZone: http://localhost:9000/eureka/,http://localhost:9010/eureka/</span><br><span class="line">  instance:</span><br><span class="line">    # 使用IP地址注册</span><br><span class="line">    prefer-ip-address: true</span><br><span class="line">    # 向注册中心注册服务id</span><br><span class="line">    instance-id: $&#123;spring.cloud.client.ip-address&#125;:$&#123;server.port&#125;</span><br><span class="line">    # 发送心跳间隔</span><br><span class="line">    lease-renewal-interval-in-seconds: 5</span><br><span class="line">    # 续约到期时间</span><br><span class="line">    lease-expiration-duration-in-seconds: 10</span><br><span class="line"></span><br><span class="line">logging:</span><br><span class="line">  level:</span><br><span class="line">    root: debug</span><br><span class="line"></span><br><span class="line"># 生产者的重试机制设置</span><br><span class="line">dept-service:</span><br><span class="line">  ribbon:</span><br><span class="line">    # 请求连接的超时时间</span><br><span class="line">    ConnectTimeOut: 250</span><br><span class="line">    # 请求处理的超时时间</span><br><span class="line">    ReadTimeOut: 1000</span><br><span class="line">    # 对所有操作请求都进行重试</span><br><span class="line">    OkToRetryOnAllOperations: true</span><br><span class="line">    # 切换实例的重试次数</span><br><span class="line">    MaxAutoRetriesNextServer: 2</span><br><span class="line">    # 对当前实例的重试次数</span><br><span class="line">    MaxAutoRetries: 1</span><br></pre></td></tr></table></figure>
+<p>3、消费数据程序</p>
+<p>数据模型类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">package com.learn.employee.entity;</span><br><span class="line"></span><br><span class="line">import lombok.Data;</span><br><span class="line"></span><br><span class="line">import javax.persistence.Entity;</span><br><span class="line">import javax.persistence.Id;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/16</span><br><span class="line"> */</span><br><span class="line">@Entity(name=&quot;employee&quot;)</span><br><span class="line">@Data</span><br><span class="line">public class Employee &#123;</span><br><span class="line">    @Id</span><br><span class="line">    private Integer id;</span><br><span class="line">    private String name;</span><br><span class="line">    private Integer deptId;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>数据控制类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">package com.learn.employee.controller;</span><br><span class="line"></span><br><span class="line">import com.learn.dept.entity.Dept;</span><br><span class="line">import org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line">import org.springframework.cloud.client.ServiceInstance;</span><br><span class="line">import org.springframework.cloud.client.discovery.DiscoveryClient;</span><br><span class="line">import org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line">import org.springframework.web.bind.annotation.PathVariable;</span><br><span class="line">import org.springframework.web.bind.annotation.RestController;</span><br><span class="line">import org.springframework.web.client.RestTemplate;</span><br><span class="line"></span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/16</span><br><span class="line"> */</span><br><span class="line">@RestController</span><br><span class="line">public class EmployeeController &#123;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * SpringCloud自带的获取服务元数据信息</span><br><span class="line">     * 用起来较为繁琐</span><br><span class="line">     */</span><br><span class="line">    @Autowired</span><br><span class="line">    private DiscoveryClient discoveryClient;</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    private RestTemplate restTemplate;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	/**</span><br><span class="line">     * 使用服务名进行调用</span><br><span class="line">     * @param id</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    @GetMapping(value=&quot;get/&#123;id&#125;&quot;)</span><br><span class="line">    public Dept findDeptById(@PathVariable Integer id)&#123;</span><br><span class="line"></span><br><span class="line">        Dept dept = restTemplate.getForObject(&quot;http://dept-service/dept/get/&quot;+id,Dept.class);</span><br><span class="line"></span><br><span class="line">        return dept;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    /*@GetMapping(value=&quot;get/&#123;id&#125;&quot;)</span><br><span class="line">    public Dept findDeptById(@PathVariable Integer id)&#123;</span><br><span class="line">        List&lt;ServiceInstance&gt; instanceList= discoveryClient.getInstances(&quot;dept-service&quot;);</span><br><span class="line"></span><br><span class="line">        ServiceInstance serviceInstance = instanceList.get(0);</span><br><span class="line"></span><br><span class="line">        Dept dept = restTemplate.getForObject(&quot;http://&quot;+serviceInstance.getHost()+</span><br><span class="line">                &quot;:&quot;+serviceInstance.getPort()+&quot;/dept/get/&quot;+id,Dept.class);</span><br><span class="line"></span><br><span class="line">        return dept;</span><br><span class="line">    &#125;*/</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>数据启动类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">package com.learn.employee;</span><br><span class="line"></span><br><span class="line">import com.netflix.loadbalancer.IRule;</span><br><span class="line">import com.netflix.loadbalancer.RandomRule;</span><br><span class="line">import com.netflix.loadbalancer.RetryRule;</span><br><span class="line">import org.springframework.boot.SpringApplication;</span><br><span class="line">import org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line">import org.springframework.cloud.client.loadbalancer.LoadBalanced;</span><br><span class="line">import org.springframework.cloud.netflix.eureka.EnableEurekaClient;</span><br><span class="line">import org.springframework.context.annotation.Bean;</span><br><span class="line">import org.springframework.web.client.RestTemplate;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/16</span><br><span class="line"> */</span><br><span class="line">@SpringBootApplication</span><br><span class="line">@EnableEurekaClient</span><br><span class="line">public class EmployeeServiceApplication &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SpringApplication.run(EmployeeServiceApplication.class,args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * @LoadBalanced 启动Ribbon的负载均衡器</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    @Bean</span><br><span class="line">    @LoadBalanced</span><br><span class="line">    public RestTemplate restTemplate()&#123;</span><br><span class="line">        return new RestTemplate();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 使用随机策略替换默认的轮询策略</span><br><span class="line">     * Ribbon自带的负载均衡模式--当然也是支持自定义的</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    @Bean</span><br><span class="line">    public IRule randomRule()&#123;</span><br><span class="line">        //com.netflix.loadbalancer.RoundRobinRule	以轮询的方式进行负载均衡</span><br><span class="line">        //com.netflix.loadbalancer.RandomRule	随机策略</span><br><span class="line">        //com.netflix.loadbalancer.RetryRule	重试策略</span><br><span class="line">        //com.netflix.loadbalancer.WeightedResponseTimeRule	权重策略.会计算每个服务的权重，越高的被调用的可能性越大</span><br><span class="line">        //com.netflix.loadbalancer.BestAvailableRule	最佳策略.遍历所有服务实例.过滤掉故障实例，并返回请求数最小的实例返回</span><br><span class="line">        //com.netflix.loadbalancer.AvailabilityFilteringRule	可用过滤策略.过滤掉故障和请求数超过阈值的服务实例，再从剩下的实例中轮询调用.</span><br><span class="line">        return new RandomRule();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Ribbon因为已经整合进Eureka，所以使用起来还是非常方便的，使用<code>RestTemplate</code>并配置<code>@LoadBalanced</code>启动负载均衡功能，还可以配置负载均衡策略和重试机制等。</p>
+<h4 id="启动访问"><a href="#启动访问" class="headerlink" title="启动访问"></a>启动访问</h4><p>依次启动每个程序，访问<code>http://localhost:8001/employee/get/1</code>，即可返回数据。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本博客无概念方面的介绍，主要是是关于SpringCloud整合相应技术的使用案例，可以快速整合启动一个SpringCloud项目。详细代码可访问<a href="https://github.com/Panlf/springcloud-learn" target="_blank" rel="noopener">我的Github</a>。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/微服务/" rel="tag"><i class="fa fa-tag"></i> 微服务</a>
+          
+            <a href="/tags/Eureka/" rel="tag"><i class="fa fa-tag"></i> Eureka</a>
+          
+            <a href="/tags/Ribbon/" rel="tag"><i class="fa fa-tag"></i> Ribbon</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/17/Logstash同步MySQL数据到ElasticSearch/" rel="next" title="Logstash同步MySQL数据到ElasticSearch">
+                <i class="fa fa-chevron-left"></i> Logstash同步MySQL数据到ElasticSearch
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/18/SpringCloud教程系列-Consul、Feign、Hystrix/" rel="prev" title="SpringCloud教程系列-Consul、Feign、Hystrix">
+                SpringCloud教程系列-Consul、Feign、Hystrix <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">枫叶梨花</p>
+              <p class="site-description motion-element" itemprop="description">正在努力提高技术的小码农</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/user/5839013461ff4b007ec2d4c4/posts?sort=popular" title="枫叶梨花" target="_blank">枫叶梨花</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建基本环境"><span class="nav-number">1.</span> <span class="nav-text">搭建基本环境</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#父项目搭建"><span class="nav-number">1.1.</span> <span class="nav-text">父项目搭建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#搭建Eureka集群服务端"><span class="nav-number">1.2.</span> <span class="nav-text">搭建Eureka集群服务端</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#搭建生产者项目"><span class="nav-number">1.3.</span> <span class="nav-text">搭建生产者项目</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#搭建消费者项目"><span class="nav-number">1.4.</span> <span class="nav-text">搭建消费者项目</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动访问"><span class="nav-number">1.5.</span> <span class="nav-text">启动访问</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫叶梨花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">88.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="微服务,Sentinel,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Sentinel是阿里巴巴开源的一款断路器实现，具有丰富的应用场景、完备的实时监控、广泛的开源生态、完善的SPI扩展点等特点。">
+<meta name="keywords" content="微服务,Sentinel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringCloud教程系列-Sentinel">
+<meta property="og:url" content="http://yoursite.com/2019/12/22/SpringCloud教程系列-Sentinel/index.html">
+<meta property="og:site_name" content="梦起飞">
+<meta property="og:description" content="Sentinel是阿里巴巴开源的一款断路器实现，具有丰富的应用场景、完备的实时监控、广泛的开源生态、完善的SPI扩展点等特点。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-23T02:17:36.886Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringCloud教程系列-Sentinel">
+<meta name="twitter:description" content="Sentinel是阿里巴巴开源的一款断路器实现，具有丰富的应用场景、完备的实时监控、广泛的开源生态、完善的SPI扩展点等特点。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/12/22/SpringCloud教程系列-Sentinel/">
+
+
+
+
+
+  <title>SpringCloud教程系列-Sentinel | 梦起飞</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梦起飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天行健，君子以自强不息</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/22/SpringCloud教程系列-Sentinel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="枫叶梨花">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梦起飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringCloud教程系列-Sentinel</h1>
+        
+
+        <div class="post-meta">
+			
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-22T20:28:25+08:00">
+                2019-12-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SpringCloud/" itemprop="url" rel="index">
+                    <span itemprop="name">SpringCloud</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,376
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  12
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Sentinel是阿里巴巴开源的一款断路器实现，具有丰富的应用场景、完备的实时监控、广泛的开源生态、完善的SPI扩展点等特点。<br><a id="more"></a></p>
+<h3 id="Sentinel管理控制台"><a href="#Sentinel管理控制台" class="headerlink" title="Sentinel管理控制台"></a>Sentinel管理控制台</h3><p>1、下载<a href="https://github.com/alibaba/Sentinel/releases" target="_blank" rel="noopener">官方</a>Jar包。</p>
+<p>2、以下命令启动<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">java -Dserver.port=8090 -Dcsp.sentinel.dashboard.server=localhost:8090 	</span><br><span class="line">		-Dproject.name=sentinel-dashboard -jar sentinel-dashboard-1.7.0.jar</span><br></pre></td></tr></table></figure></p>
+<p>-Dserver.port=8090用于指定Sentinel控制台端口为8090</p>
+<p>3、登录，用户名和密码为sentinel</p>
+<p>4、配置</p>
+<p>我们可以使用控制台对调用方法的流控与降级进行实时配置。</p>
+<h3 id="Sentinel入门案例"><a href="#Sentinel入门案例" class="headerlink" title="Sentinel入门案例"></a>Sentinel入门案例</h3><p>Sentinel入门案例，使用Consul的注册中心，生产者不访问数据库，直接返回数据，主要是测试Sentinel在消费端控制对访问请求的限流、熔断等降级功能。</p>
+<h4 id="搭建生产者"><a href="#搭建生产者" class="headerlink" title="搭建生产者"></a>搭建生产者</h4><p>在springcloud-learn目录下新建Module的Maven项目 - springcloud-sentinel-product。</p>
+<p>1、导入Jar包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- springcloud-gateway不支持web,因为聚合项目,改成各自导入--&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-cloud-starter-consul-discovery&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>2、application.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">server:</span><br><span class="line">  port: 8030</span><br><span class="line"></span><br><span class="line">spring:</span><br><span class="line">  application:</span><br><span class="line">      name: sentinel-product</span><br><span class="line">  cloud:</span><br><span class="line">    # 配置consul的服务注册</span><br><span class="line">    consul:</span><br><span class="line">      host: 127.0.0.1 # consul服务器主机地址</span><br><span class="line">      port: 8500  # consul服务器ip地址</span><br><span class="line">      discovery:</span><br><span class="line">        # 是否需要注册</span><br><span class="line">        register: true</span><br><span class="line">        # 注册的实例ID 唯一标志</span><br><span class="line">        instance-id:  $&#123;spring.application.name&#125;:$&#123;server.port&#125;</span><br><span class="line">        # 服务名称</span><br><span class="line">        service-name: $&#123;spring.application.name&#125;</span><br><span class="line">        # 服务请求端口</span><br><span class="line">        port: $&#123;server.port&#125;</span><br><span class="line">        # 指定开启ip地址注册</span><br><span class="line">        prefer-ip-address: true</span><br><span class="line">        # 当前服务的请求ip</span><br><span class="line">        ip-address: $&#123;spring.cloud.client.ip-address&#125;</span><br></pre></td></tr></table></figure></p>
+<p>3、程序</p>
+<p>数据模型类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">import lombok.Data;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/17</span><br><span class="line"> */</span><br><span class="line">@Data</span><br><span class="line">public class Product &#123;</span><br><span class="line"></span><br><span class="line">    private Integer id;</span><br><span class="line">    private String name;</span><br><span class="line">    private Double price;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>数据控制类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">import com.learn.sentinel.product.entity.Product;</span><br><span class="line">import org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line">import org.springframework.web.bind.annotation.PathVariable;</span><br><span class="line">import org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line">import java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/17</span><br><span class="line"> */</span><br><span class="line">@RestController</span><br><span class="line">public class ProductController &#123;</span><br><span class="line"></span><br><span class="line">    @GetMapping(&quot;get/&#123;id&#125;&quot;)</span><br><span class="line">    public Product findById(@PathVariable Integer id)&#123;</span><br><span class="line">        /**</span><br><span class="line">         * 测试熔断器的熔断时间</span><br><span class="line">         */</span><br><span class="line">        if(id==2)&#123;</span><br><span class="line">            try&#123;</span><br><span class="line">                TimeUnit.MILLISECONDS.sleep(2000);</span><br><span class="line">            &#125;catch (Exception e)&#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">        Product product = new Product();</span><br><span class="line">        product.setId(id);</span><br><span class="line">        product.setName(id+&quot; -- test sentinel Product&quot;);</span><br><span class="line">        product.setPrice(id*28.5);</span><br><span class="line">        return product;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>启动类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">import org.springframework.boot.SpringApplication;</span><br><span class="line">import org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/19</span><br><span class="line"> */</span><br><span class="line">@SpringBootApplication</span><br><span class="line">public class SentinelProductApplication &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SpringApplication.run(SentinelProductApplication.class,args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="搭建消费者"><a href="#搭建消费者" class="headerlink" title="搭建消费者"></a>搭建消费者</h4><p>Sentinel支持RestTemplate、Feign，所以在这里一次性全部导入。</p>
+<p>在springcloud-learn目录下新建Module的Maven项目 - springcloud-sentinel-order。</p>
+<p>1、导入Jar包</p>
+<p>在Module导入之前需要先在springcloud-learn的父项目导入以下Jar包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;com.alibaba.cloud&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-cloud-alibaba-dependencies&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.1.0.RELEASE&lt;/version&gt;</span><br><span class="line">    &lt;type&gt;pom&lt;/type&gt;</span><br><span class="line">    &lt;scope&gt;import&lt;/scope&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p>在Module包中导入以下Jar包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 整合Consul注册中心--&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-cloud-starter-consul-discovery&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 整合Feign --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-cloud-starter-openfeign&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;com.learn&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springcloud-sentinel-product&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-cloud-commons&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 整合Sentinel --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;com.alibaba.cloud&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-cloud-starter-alibaba-sentinel&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p>2、application.yml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">server:</span><br><span class="line">  port: 8031</span><br><span class="line"></span><br><span class="line"># 在Feign模块中要生效sentinel的超时时间，必须设置此时间</span><br><span class="line">ribbon:</span><br><span class="line">  ConnectTimeout: 5000</span><br><span class="line">  ReadTimeout: 5000</span><br><span class="line"></span><br><span class="line">spring:</span><br><span class="line">  application:</span><br><span class="line">      name: sentinel-order</span><br><span class="line">  cloud:</span><br><span class="line">    sentinel:</span><br><span class="line">      transport:</span><br><span class="line">        dashboard: localhost:8090 #sentinel控制台的请求地址</span><br><span class="line">      eager: true # 立即加载,取消sentinel控制台懒加载</span><br><span class="line">    # 配置consul的服务注册</span><br><span class="line">    consul:</span><br><span class="line">      host: 127.0.0.1 # consul服务器主机地址</span><br><span class="line">      port: 8500  # consul服务器ip地址</span><br><span class="line">      discovery:</span><br><span class="line">        # 是否需要注册</span><br><span class="line">        register: true</span><br><span class="line">        # 注册的实例ID 唯一标志</span><br><span class="line">        instance-id:  $&#123;spring.application.name&#125;:$&#123;server.port&#125;</span><br><span class="line">        # 服务名称</span><br><span class="line">        service-name: $&#123;spring.application.name&#125;</span><br><span class="line">        # 服务请求端口</span><br><span class="line">        port: $&#123;server.port&#125;</span><br><span class="line">        # 指定开启ip地址注册</span><br><span class="line">        prefer-ip-address: true</span><br><span class="line">        # 当前服务的请求ip</span><br><span class="line">        ip-address: $&#123;spring.cloud.client.ip-address&#125;</span><br><span class="line"></span><br><span class="line"># 当Sentinel下使用Feign配置</span><br><span class="line">feign:</span><br><span class="line">  sentinel:</span><br><span class="line">    enabled: true</span><br></pre></td></tr></table></figure></p>
+<p>3、数据模型类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">import com.learn.sentinel.product.entity.Product;</span><br><span class="line">import lombok.Data;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/17</span><br><span class="line"> */</span><br><span class="line">@Data</span><br><span class="line">public class Order &#123;</span><br><span class="line">    private Integer id;</span><br><span class="line">    private String address;</span><br><span class="line">    private Product product;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>4、启动类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">import org.springframework.boot.SpringApplication;</span><br><span class="line">import org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line">import org.springframework.cloud.client.loadbalancer.LoadBalanced;</span><br><span class="line">import org.springframework.cloud.openfeign.EnableFeignClients;</span><br><span class="line">import org.springframework.context.annotation.Bean;</span><br><span class="line">import org.springframework.web.client.RestTemplate;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/19</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">@SpringBootApplication</span><br><span class="line">//当启用Feign时使用</span><br><span class="line">@EnableFeignClients</span><br><span class="line">public class SentinelOrderApplication &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SpringApplication.run(SentinelOrderApplication.class,args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    @Bean</span><br><span class="line">    @LoadBalanced</span><br><span class="line">    public RestTemplate restTemplate()&#123;</span><br><span class="line">        return new RestTemplate();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="熔断限流配置"><a href="#熔断限流配置" class="headerlink" title="熔断限流配置"></a>熔断限流配置</h4><p>1、配置RestTemplate的第一种模式</p>
+<p>这种方式直接在需要控制的方法上使用注解<code>@SentinelResource</code>进行配置。</p>
+<p>在数据控制器类中使用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">@Autowired</span><br><span class="line">RestTemplate restTemplate;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @SentinelResource</span><br><span class="line"> *  blockHandler 声明熔断时调用的降级方法</span><br><span class="line"> *  fallback 抛出异常执行的降级方法</span><br><span class="line"> * @param id</span><br><span class="line"> * @return</span><br><span class="line"> */</span><br><span class="line">@SentinelResource(blockHandler = &quot;orderBlockHandler&quot;,fallback = &quot;orderFallBack&quot;)</span><br><span class="line">@GetMapping(&quot;get/&#123;id&#125;&quot;)</span><br><span class="line">public Order findById(@PathVariable Integer id) &#123;</span><br><span class="line">    /**</span><br><span class="line">     * 用于测试熔断器</span><br><span class="line">     */</span><br><span class="line">    if(id==1)&#123;</span><br><span class="line">        throw new RuntimeException(&quot;id等于1人为异常&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    Product product =restTemplate.getForObject(&quot;http://sentinel-product/get/&quot;+id, Product.class);</span><br><span class="line">    Order order = new Order();</span><br><span class="line">    order.setId(id);</span><br><span class="line">    order.setAddress(&quot;杭州&quot;);</span><br><span class="line">    order.setProduct(product);</span><br><span class="line">    return order;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 定义降级逻辑</span><br><span class="line"> * @param id</span><br><span class="line"> * @return</span><br><span class="line"> */</span><br><span class="line">public Order orderBlockHandler(@PathVariable Integer id) &#123;</span><br><span class="line">    Product product = new Product();</span><br><span class="line">    product.setName(&quot;触发熔断的降级方法&quot;);</span><br><span class="line">    Order order = new Order();</span><br><span class="line">    order.setId(id);</span><br><span class="line">    order.setProduct(product);</span><br><span class="line">    return order;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public Order orderFallBack(@PathVariable Integer id) &#123;</span><br><span class="line">    Product product = new Product();</span><br><span class="line">    product.setName(&quot;抛出异常执行的降级方法&quot;);</span><br><span class="line">    Order order = new Order();</span><br><span class="line">    order.setId(id);</span><br><span class="line">    order.setProduct(product);</span><br><span class="line">    return order;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>2、配置RestTemplate的第二种模式</p>
+<p>在创建RestTemplate实例的时候使用注解@<code>SentinelRestTemplate</code>配置。不过需要提前定义一个默认降级逻辑方法类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">import com.alibaba.cloud.sentinel.rest.SentinelClientHttpResponse;</span><br><span class="line">import com.alibaba.csp.sentinel.slots.block.BlockException;</span><br><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line">import com.learn.sentinel.order.entity.Order;</span><br><span class="line">import com.learn.sentinel.product.entity.Product;</span><br><span class="line">import org.springframework.http.HttpRequest;</span><br><span class="line">import org.springframework.http.client.ClientHttpRequestExecution;</span><br><span class="line">import org.springframework.http.client.ClientHttpResponse;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/19</span><br><span class="line"> */</span><br><span class="line">public class ExceptionUtils &#123;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 限流熔断降级业务逻辑</span><br><span class="line">     * @param request</span><br><span class="line">     * @param body</span><br><span class="line">     * @param execution</span><br><span class="line">     * @param exception</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public static ClientHttpResponse handleFallback(HttpRequest request, byte[] body, ClientHttpRequestExecution execution, BlockException exception) &#123;</span><br><span class="line">        System.err.println(&quot;Oops:&quot;+exception.getClass().getCanonicalName());</span><br><span class="line">        Product product = new Product();</span><br><span class="line">        product.setName(&quot;限流熔断的降级方法&quot;);</span><br><span class="line">        Order order = new Order();</span><br><span class="line">        order.setProduct(product);</span><br><span class="line">        return new SentinelClientHttpResponse(JSON.toJSONString(order));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 异常熔断降级业务逻辑</span><br><span class="line">     * @param request</span><br><span class="line">     * @param body</span><br><span class="line">     * @param execution</span><br><span class="line">     * @param exception</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public static ClientHttpResponse handleBlock(HttpRequest request, byte[] body, ClientHttpRequestExecution execution, BlockException exception) &#123;</span><br><span class="line">        System.err.println(&quot;Oops:&quot;+exception.getClass().getCanonicalName());</span><br><span class="line">        Product product = new Product();</span><br><span class="line">        product.setName(&quot;异常熔断的降级方法&quot;);</span><br><span class="line">        Order order = new Order();</span><br><span class="line">        order.setProduct(product);</span><br><span class="line">        return new SentinelClientHttpResponse(JSON.toJSONString(order));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>配置Sentinel<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * sentinel 支持对restTemplate的服务调用使用sentinel方法</span><br><span class="line"> *  在构造RestTemplate对象的时候，只需要加载@SentinelRestTemplate</span><br><span class="line"> * @return</span><br><span class="line"> */</span><br><span class="line">@Bean</span><br><span class="line">@LoadBalanced</span><br><span class="line">@SentinelRestTemplate(fallback = &quot;handleFallback&quot;,fallbackClass = ExceptionUtils.class, blockHandler = &quot;handleBlock&quot;,blockHandlerClass = ExceptionUtils.class)</span><br><span class="line">public RestTemplate restTemplate()&#123;</span><br><span class="line">    return new RestTemplate();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>3、配置Feign</p>
+<p>这个与Hystrix的使用方式一致，并无特别的配置。</p>
+<p>声明需要调用的微服务名称<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">import com.learn.sentinel.product.entity.Product;</span><br><span class="line">import org.springframework.cloud.openfeign.FeignClient;</span><br><span class="line">import org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line">import org.springframework.web.bind.annotation.PathVariable;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 声明需要调用的微服务名称</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/17</span><br><span class="line"> */</span><br><span class="line">@FeignClient(name=&quot;sentinel-product&quot;,fallback = ProductFeignClientCallBack.class)</span><br><span class="line">public interface ProductFeignClient &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 配置需要调用的微服务接口</span><br><span class="line">     * @param id</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    @GetMapping(value = &quot;/get/&#123;id&#125;&quot;)</span><br><span class="line">    public Product findById(@PathVariable(&quot;id&quot;) Integer id);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>降级触发逻辑方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">import com.learn.sentinel.product.entity.Product;</span><br><span class="line">import org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author Panlf</span><br><span class="line"> * @date 2019/12/18</span><br><span class="line"> */</span><br><span class="line">@Component</span><br><span class="line">public class ProductFeignClientCallBack implements ProductFeignClient &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Product findById(Integer id) &#123;</span><br><span class="line">        Product product = new Product();</span><br><span class="line">        product.setName(&quot;findById触发降级方法&quot;);</span><br><span class="line">        return product;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="加载本地配置"><a href="#加载本地配置" class="headerlink" title="加载本地配置"></a>加载本地配置</h4><p>Sentinel对方法的流控和降级可以在本地配置好，然后启动项目自动加载<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  cloud:</span><br><span class="line">    sentinel:</span><br><span class="line">      datasource:</span><br><span class="line">        ds1:</span><br><span class="line">          file:</span><br><span class="line">            file: classpath:flowrule.json # json文件</span><br><span class="line">            data-type: json # json方式</span><br><span class="line">            rule-type: degrade # flow 流控 degrade 熔断</span><br></pre></td></tr></table></figure></p>
+<p>熔断降级的flowrule.json<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;resource&quot;: &quot;GET:http://sentinel-product/get/&#123;id&#125;&quot;, # 资源名</span><br><span class="line">    &quot;count&quot;: 5000, # 限流阈值</span><br><span class="line">    &quot;grade&quot;: 0, # 限流阈值类型  </span><br><span class="line">    &quot;timeWindow&quot;: 10 # 时间窗口</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>还可以配置限流的配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">resource 资源名	即限流规则的作用对象</span><br><span class="line">count	限流阈值</span><br><span class="line">grade	限流阈值类型 QPS或并发数</span><br><span class="line">limitApp	流控针对的调用来源，若为default则不区分调用来源</span><br><span class="line">strategy	调用关系限流策略</span><br><span class="line">controlBehavior	流量控制效果 直接拒绝、warm up、匀速排队</span><br></pre></td></tr></table></figure></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Sentinel作为熔断器是可用来代替Hystrix，Sentinel功能丰富，还可以对方法进行动态配置熔断条件，实时修改，配置也清楚明了，个人比较推荐Sentinel。详细代码可访问<a href="https://github.com/Panlf/springcloud-learn" target="_blank" rel="noopener">我的Github</a>。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/微服务/" rel="tag"><i class="fa fa-tag"></i> 微服务</a>
+          
+            <a href="/tags/Sentinel/" rel="tag"><i class="fa fa-tag"></i> Sentinel</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/18/SpringCloud教程系列-Consul、Feign、Hystrix/" rel="next" title="SpringCloud教程系列-Consul、Feign、Hystrix">
+                <i class="fa fa-chevron-left"></i> SpringCloud教程系列-Consul、Feign、Hystrix
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/23/SpringCloud教程系列-Zuul/" rel="prev" title="SpringCloud教程系列-Zuul">
+                SpringCloud教程系列-Zuul <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">枫叶梨花</p>
+              <p class="site-description motion-element" itemprop="description">正在努力提高技术的小码农</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/user/5839013461ff4b007ec2d4c4/posts?sort=popular" title="枫叶梨花" target="_blank">枫叶梨花</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Sentinel管理控制台"><span class="nav-number">1.</span> <span class="nav-text">Sentinel管理控制台</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sentinel入门案例"><span class="nav-number">2.</span> <span class="nav-text">Sentinel入门案例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#搭建生产者"><span class="nav-number">2.1.</span> <span class="nav-text">搭建生产者</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#搭建消费者"><span class="nav-number">2.2.</span> <span class="nav-text">搭建消费者</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#熔断限流配置"><span class="nav-number">2.3.</span> <span class="nav-text">熔断限流配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#加载本地配置"><span class="nav-number">2.4.</span> <span class="nav-text">加载本地配置</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫叶梨花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">88.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

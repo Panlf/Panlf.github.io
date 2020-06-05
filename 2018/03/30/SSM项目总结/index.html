@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="MyBatis,Spring,SpringMVC,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="已经差不多两个月没写博客了，这段时间一直在写一个基于SSM的小项目，之前学了SSM，没有项目写，不知道自己掌握到什么程度，现在自己写了一个小项目，感觉还是学到了很多东西，现在写完总结一下。">
+<meta name="keywords" content="MyBatis,Spring,SpringMVC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SSM项目总结">
+<meta property="og:url" content="http://yoursite.com/2018/03/30/SSM项目总结/index.html">
+<meta property="og:site_name" content="梦起飞">
+<meta property="og:description" content="已经差不多两个月没写博客了，这段时间一直在写一个基于SSM的小项目，之前学了SSM，没有项目写，不知道自己掌握到什么程度，现在自己写了一个小项目，感觉还是学到了很多东西，现在写完总结一下。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-01-18T11:26:02.622Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SSM项目总结">
+<meta name="twitter:description" content="已经差不多两个月没写博客了，这段时间一直在写一个基于SSM的小项目，之前学了SSM，没有项目写，不知道自己掌握到什么程度，现在自己写了一个小项目，感觉还是学到了很多东西，现在写完总结一下。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/03/30/SSM项目总结/">
+
+
+
+
+
+  <title>SSM项目总结 | 梦起飞</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梦起飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天行健，君子以自强不息</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/30/SSM项目总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="枫叶梨花">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梦起飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SSM项目总结</h1>
+        
+
+        <div class="post-meta">
+			
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-30T09:57:11+08:00">
+                2018-03-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java框架/" itemprop="url" rel="index">
+                    <span itemprop="name">Java框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,827
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>已经差不多两个月没写博客了，这段时间一直在写一个基于SSM的小项目，之前学了SSM，没有项目写，不知道自己掌握到什么程度，现在自己写了一个小项目，感觉还是学到了很多东西，现在写完总结一下。</p>
+<a id="more"></a>
+<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><h4 id="freemarker配置"><a href="#freemarker配置" class="headerlink" title="freemarker配置"></a>freemarker配置</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 配置sprigmvc视图解析器--&gt;</span><br><span class="line">&lt;bean id= &quot;freemarkerViewResolver&quot; </span><br><span class="line">	class=&quot;org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;order&quot; value=&quot;1&quot;&gt;&lt;/property&gt;</span><br><span class="line">	&lt;property name=&quot;prefix&quot; value=&quot;/WEB-INF/&quot;&gt;&lt;/property&gt;</span><br><span class="line">	&lt;property name=&quot;suffix&quot; value=&quot;.html&quot;&gt;&lt;/property&gt;</span><br><span class="line">	&lt;property name=&quot;requestContextAttribute&quot; value=&quot;request&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;contentType&quot; value=&quot;text/html;charset=utf-8&quot;&gt;&lt;/property&gt;		</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;bean id=&quot;freemarkerConfig&quot;</span><br><span class="line">	 class=&quot;org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer&quot;&gt;</span><br><span class="line">    &lt;property name=&quot;templateLoaderPath&quot;&gt;</span><br><span class="line">        &lt;value&gt;/&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;!-- 设置FreeMarker环境属性 --&gt;</span><br><span class="line">    &lt;property name=&quot;freemarkerSettings&quot;&gt;</span><br><span class="line">        &lt;props&gt;</span><br><span class="line">        	&lt;!--刷新模板的周期，单位为秒 --&gt;</span><br><span class="line">            &lt;prop key=&quot;template_update_delay&quot;&gt;5&lt;/prop&gt;</span><br><span class="line">            &lt;prop key=&quot;default_encoding&quot;&gt;UTF-8&lt;/prop&gt;&lt;!--模板的编码格式 --&gt;</span><br><span class="line">            &lt;prop key=&quot;locale&quot;&gt;UTF-8&lt;/prop&gt;&lt;!-- 本地化设置 --&gt;</span><br><span class="line">            &lt;prop key=&quot;datetime_format&quot;&gt;yyyy-MM-dd HH:mm:ss&lt;/prop&gt;</span><br><span class="line">            &lt;prop key=&quot;time_format&quot;&gt;HH:mm:ss&lt;/prop&gt;</span><br><span class="line">            &lt;prop key=&quot;number_format&quot;&gt;0.##&lt;/prop&gt;</span><br><span class="line">            &lt;prop key=&quot;boolean_format&quot;&gt;true,false&lt;/prop&gt;</span><br><span class="line">            &lt;prop key=&quot;whitespace_stripping&quot;&gt;true&lt;/prop&gt;</span><br><span class="line">            &lt;prop key=&quot;tag_syntax&quot;&gt;auto_detect&lt;/prop&gt;</span><br><span class="line">            &lt;prop key=&quot;url_escaping_charset&quot;&gt;UTF-8&lt;/prop&gt;</span><br><span class="line">        &lt;/props&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+<p><em>注意如果html中需要获取项目的路径就要配置requestContextAttribute这个属性，这样才能在前端使用${request.contextPath}获取到项目路径。</em></p>
+<h4 id="拦截器配置"><a href="#拦截器配置" class="headerlink" title="拦截器配置"></a>拦截器配置</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">import javax.servlet.http.HttpServletRequest;</span><br><span class="line">import javax.servlet.http.HttpServletResponse;</span><br><span class="line">import javax.servlet.http.HttpSession;</span><br><span class="line"></span><br><span class="line">import org.springframework.web.servlet.HandlerInterceptor;</span><br><span class="line">import org.springframework.web.servlet.ModelAndView;</span><br><span class="line"></span><br><span class="line">public class AdminLoginInterceptor implements HandlerInterceptor &#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public boolean preHandle(HttpServletRequest request, </span><br><span class="line">				HttpServletResponse response, Object handler)</span><br><span class="line">			throws Exception &#123;</span><br><span class="line">		HttpSession session=request.getSession();</span><br><span class="line">		//判断session中是否有登录信息，如果没有则跳转到登录界面，如果有则执行</span><br><span class="line">		if(session.getAttribute(&quot;adminUser&quot;) == null)&#123;</span><br><span class="line"></span><br><span class="line">			//因为资源是在WEB-INF下所以需要使用转发，不能使用重定向</span><br><span class="line">			//使用重定向可用如下：</span><br><span class="line">			//request.getRequestDispatcher(&quot;/WEB-INF/login.jsp&quot;).forward(request, response);</span><br><span class="line">			response.sendRedirect(request.getContextPath() + &quot;/admin/login&quot;);</span><br><span class="line">			return false;</span><br><span class="line">		&#125;</span><br><span class="line">		return true;</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void postHandle(HttpServletRequest request, </span><br><span class="line">			HttpServletResponse response, Object handler,ModelAndView modelAndView)</span><br><span class="line">			 throws Exception &#123;	</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void afterCompletion(HttpServletRequest request, </span><br><span class="line">			HttpServletResponse response, Object handler, Exception ex)</span><br><span class="line">			throws Exception &#123;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>SpringMVC.xml配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;mvc:interceptors&gt;</span><br><span class="line">	&lt;mvc:interceptor&gt;</span><br><span class="line">		&lt;!-- 拦截请求的路径    </span><br><span class="line">			要拦截所有必需配置成/** --&gt;</span><br><span class="line">		&lt;mvc:mapping path=&quot;/admin/**&quot;/&gt;</span><br><span class="line">		&lt;!-- 这一句必须除外，不然转发会进入到死循环，然后导致cookie爆满出错 --&gt;</span><br><span class="line">		&lt;mvc:exclude-mapping path=&quot;/admin/login&quot;/&gt;</span><br><span class="line">		&lt;mvc:exclude-mapping path=&quot;/admin/adminLogin&quot;/&gt;</span><br><span class="line">		&lt;!-- 指定拦截器的位置 --&gt;</span><br><span class="line">		&lt;bean class=&quot;com.plf.interceptor.AdminLoginInterceptor&quot;&gt;&lt;/bean&gt;</span><br><span class="line">	&lt;/mvc:interceptor&gt;</span><br><span class="line">	&lt;mvc:interceptor&gt;</span><br><span class="line">		&lt;mvc:mapping path=&quot;/user/message&quot;/&gt;</span><br><span class="line">		&lt;mvc:mapping path=&quot;/car/save&quot;/&gt;</span><br><span class="line">		&lt;!-- 指定拦截器的位置 --&gt;</span><br><span class="line">		&lt;bean class=&quot;com.plf.interceptor.FontLoginInterceptor&quot;&gt;&lt;/bean&gt;</span><br><span class="line">	&lt;/mvc:interceptor&gt;</span><br><span class="line">&lt;/mvc:interceptors&gt;</span><br></pre></td></tr></table></figure></p>
+<h4 id="pageHelper配置"><a href="#pageHelper配置" class="headerlink" title="pageHelper配置"></a>pageHelper配置</h4><p>1、jar包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;com.github.pagehelper&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;pagehelper&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;5.1.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p>2、mybatis-config.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE configuration</span><br><span class="line">  PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot;</span><br><span class="line">  &quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;configuration&gt;</span><br><span class="line">  		&lt;settings&gt;</span><br><span class="line">  			&lt;setting name=&quot;mapUnderscoreToCamelCase&quot; value=&quot;true&quot;/&gt;</span><br><span class="line">  		&lt;/settings&gt;</span><br><span class="line">  		&lt;typeAliases&gt;</span><br><span class="line">  			&lt;package name=&quot;com.plf.bean&quot;/&gt;</span><br><span class="line">  		&lt;/typeAliases&gt;</span><br><span class="line">  		&lt;plugins&gt;</span><br><span class="line">  			&lt;plugin interceptor=&quot;com.github.pagehelper.PageInterceptor&quot;&gt;</span><br><span class="line">  				&lt;property name=&quot;reasonable&quot; value=&quot;true&quot;/&gt;</span><br><span class="line">  			&lt;/plugin&gt;</span><br><span class="line">  		&lt;/plugins&gt;</span><br><span class="line">  &lt;/configuration&gt;</span><br></pre></td></tr></table></figure></p>
+<p>3、UserController.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@RequestMapping(value=&quot;userlist&quot;,method=RequestMethod.GET)</span><br><span class="line">@ResponseBody</span><br><span class="line">public Msg findUserList(@RequestParam int pageNumber,@RequestParam int pageSize,@RequestParam(required=false) String username)&#123;</span><br><span class="line">	PageHelper.startPage(pageNumber, pageSize);</span><br><span class="line">	List&lt;User&gt; list = userService.findByUsernamePage(username);</span><br><span class="line">	PageInfo&lt;User&gt; page=new PageInfo&lt;User&gt;(list);</span><br><span class="line">	return Msg.success(&quot;成功&quot;, page);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>pageHelper也是一个比较简单易用的Mybaits分页插件。</p>
+<h3 id="程序代码"><a href="#程序代码" class="headerlink" title="程序代码"></a>程序代码</h3><h4 id="请求参数接受"><a href="#请求参数接受" class="headerlink" title="请求参数接受"></a>请求参数接受</h4><p>1、接受Restful风格参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@RequestMapping(value=&quot;/find/&#123;id&#125;&quot;,method=RequestMethod.GET)</span><br><span class="line">public String findUser(@PathVariable Integer id)&#123;</span><br><span class="line">	return &quot;&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>2、接受普通类型参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@RequestMapping(value=&quot;find&quot;,method=RequestMethod.GET)</span><br><span class="line">public String findUser(@RequestParam Integer id)&#123;</span><br><span class="line">	return &quot;&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>3、接受Bean类型参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@RequestMapping(value=&quot;save&quot;,method=RequestMethod.GET)</span><br><span class="line">public String save(User user)&#123;</span><br><span class="line">	return &quot;&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="参数接受格式"><a href="#参数接受格式" class="headerlink" title="参数接受格式"></a>参数接受格式</h4><p>因为SpringMVC是外国人开发的，接受Date类型的时候，老外比较喜欢用1994/08/10这样的格式，但是我想用1994-08-10这样的格式，所以需要一个<br>格式转换，一般是使用SpringMVC提供格式转换接口。</p>
+<p>比较简单的方式就是在Bean上注解：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import org.springframework.format.annotation.DateTimeFormat;</span><br><span class="line"></span><br><span class="line"> @DateTimeFormat(pattern=&quot;yyyy-MM-dd&quot;)</span><br><span class="line"> private Date birthday;</span><br></pre></td></tr></table></figure></p>
+<h4 id="返回参数"><a href="#返回参数" class="headerlink" title="返回参数"></a>返回参数</h4><p>一般SpringMVC不指明则需要返回一个视图，然后需要定位到某个页面，但是也需要返回JSON数据的时候，这样就需要在方法上注解：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@ResponseBody</span><br><span class="line"></span><br><span class="line">需要Jar包</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.9.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>当然也可以在类上注解<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@RestController</span><br><span class="line"></span><br><span class="line">其实就是@Controller+@ResponseBody，但是是否该类中所有方法</span><br></pre></td></tr></table></figure></p>
+<h4 id="Mybaits使用"><a href="#Mybaits使用" class="headerlink" title="Mybaits使用"></a>Mybaits使用</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;Message&gt; findByAuthor(String author) &#123;</span><br><span class="line">	MessageExample example = new MessageExample();</span><br><span class="line">	example.setOrderByClause(&quot;id DESC&quot;);</span><br><span class="line">	if(author !=null &amp;&amp; author.trim().length()&gt;0)&#123;</span><br><span class="line">		Criteria criteria = example.createCriteria();</span><br><span class="line">		criteria.andAuthorEqualTo(author);</span><br><span class="line">	&#125;</span><br><span class="line">	List&lt;Message&gt; list = messageMapper.selectByExampleWithBLOBs(example);</span><br><span class="line">	return list;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个比较简单方便也就不多讲了。</p>
+<h4 id="外部配置文件使用"><a href="#外部配置文件使用" class="headerlink" title="外部配置文件使用"></a>外部配置文件使用</h4><p>下载目录我弄成可配置化的，所以写了一个工具类，但是下面的方法在SpringMVC项目中就是读取不到配置文件，后来发现这样写是不行的，需要在Spring中导入配置文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">import java.io.BufferedInputStream;</span><br><span class="line">import java.io.FileInputStream;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.InputStream;</span><br><span class="line">import java.util.Properties;</span><br><span class="line"></span><br><span class="line">public class PropertiesUtil &#123;</span><br><span class="line">	//读取properties</span><br><span class="line">	public static String readProperties(String key)&#123;</span><br><span class="line">		Properties prop = new Properties(); </span><br><span class="line">		InputStream in;</span><br><span class="line">		try &#123;</span><br><span class="line">			in = new BufferedInputStream</span><br><span class="line">				 (new FileInputStream(&quot;src/main/resources/outConfig.properties&quot;));</span><br><span class="line">			prop.load(in);</span><br><span class="line">		&#125; catch (IOException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		return prop.getProperty(key);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我在<code>applicationContext.xml</code>导入配置文件，但是我在<code>@Controller</code>中使用<code>@Value(&quot;${user.upload}&quot;)</code>并不能获取，但是在<code>@Service</code>的类中可以，<br>查资料后发现在使用spring mvc时，实际上是两个spring容器，必须在<code>springmvc.xml</code>中再定义一遍，才能获取，不然只能在<code>@Service</code>中获取。</p>
+<p>applicationContext.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=&quot;propertyConfigurer&quot; class=&quot;org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer&quot;&gt;  </span><br><span class="line">    &lt;property name=&quot;locations&quot;&gt;  </span><br><span class="line">   		&lt;list&gt;</span><br><span class="line">            &lt;value&gt;classpath:outConfig.properties&lt;/value&gt;</span><br><span class="line">            &lt;value&gt;classpath:db.properties&lt;/value&gt;</span><br><span class="line">        &lt;/list&gt; </span><br><span class="line">    &lt;/property&gt;  </span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
+<p>springmvc.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;context:property-placeholder location=&quot;classpath:outConfig.properties&quot; /&gt;</span><br></pre></td></tr></table></figure></p>
+<h4 id="邮件工具类"><a href="#邮件工具类" class="headerlink" title="邮件工具类"></a>邮件工具类</h4><p>项目中需要一个发送邮件的功能，所以我自己写了一个邮件发送功能，使用的Siimple-Java-mail这个Jar包，使用还是蛮方便的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.simplejavamail&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;simple-java-mail&lt;/artifactId&gt;</span><br><span class="line">	&lt;version&gt;5.0.1&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class MailConfig &#123;</span><br><span class="line">	@Value(&quot;$&#123;user.email.name&#125;&quot;)</span><br><span class="line">	private String emailName;</span><br><span class="line">	</span><br><span class="line">	@Value(&quot;$&#123;user.email.password&#125;&quot;)</span><br><span class="line">	private String emailPassword;</span><br><span class="line">	@Bean</span><br><span class="line">	public Mailer getMailer()&#123;</span><br><span class="line">		Mailer mailer = MailerBuilder</span><br><span class="line"></span><br><span class="line">				 	//qq  smtp.qq.com  465/587</span><br><span class="line">				 	//163  smtp.163.com 25</span><br><span class="line">		          .withSMTPServer(&quot;smtp.qq.com&quot;, 587, emailName, emailPassword)</span><br><span class="line">		          .withTransportStrategy(TransportStrategy.SMTP_TLS)</span><br><span class="line">		          .withSessionTimeout(10 * 1000)</span><br><span class="line">		          .clearEmailAddressCriteria() // turns off email validation</span><br><span class="line">		          .withDebugLogging(true)</span><br><span class="line">		          .buildMailer();</span><br><span class="line">		return  mailer;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>功能<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">@Autowired</span><br><span class="line">private Mailer mailer;</span><br><span class="line">	</span><br><span class="line">Email em = EmailBuilder.startingBlank()</span><br><span class="line">			          .from(&quot;FashionShop&quot;,emailName)  </span><br><span class="line">					  .to(&quot;用户&quot;, email)</span><br><span class="line">			          .withSubject(&quot;请查收你忘记的密码&quot;)</span><br><span class="line">			          .withPlainText(&quot;你在FashionShop的登录密码为：&quot;+u.getPassword())</span><br><span class="line">			          .buildEmail();</span><br><span class="line">mailer.sendMail(em);</span><br></pre></td></tr></table></figure></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>其实我发现SSM真的特别好用，不管在功能扩展上还是本身开发效率都是特别的高，写起来感觉比SSH简易多了，但是其实这个项目因为比较简单，很多技术没有利用起来，但是也是一次很棒的体验，让我对SSM有了更深层次的理解，接下来还是要继续钻研技术，提高自己的编程水平，加油！</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MyBatis/" rel="tag"><i class="fa fa-tag"></i> MyBatis</a>
+          
+            <a href="/tags/Spring/" rel="tag"><i class="fa fa-tag"></i> Spring</a>
+          
+            <a href="/tags/SpringMVC/" rel="tag"><i class="fa fa-tag"></i> SpringMVC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/30/Java函数的参数传递引发的思考/" rel="next" title="Java函数的参数传递引发的思考">
+                <i class="fa fa-chevron-left"></i> Java函数的参数传递引发的思考
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/31/基于Java的设计模式-观察者模式/" rel="prev" title="基于Java的设计模式-观察者模式">
+                基于Java的设计模式-观察者模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">枫叶梨花</p>
+              <p class="site-description motion-element" itemprop="description">正在努力提高技术的小码农</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/user/5839013461ff4b007ec2d4c4/posts?sort=popular" title="枫叶梨花" target="_blank">枫叶梨花</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置文件"><span class="nav-number">1.</span> <span class="nav-text">配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#freemarker配置"><span class="nav-number">1.1.</span> <span class="nav-text">freemarker配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拦截器配置"><span class="nav-number">1.2.</span> <span class="nav-text">拦截器配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pageHelper配置"><span class="nav-number">1.3.</span> <span class="nav-text">pageHelper配置</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#程序代码"><span class="nav-number">2.</span> <span class="nav-text">程序代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#请求参数接受"><span class="nav-number">2.1.</span> <span class="nav-text">请求参数接受</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参数接受格式"><span class="nav-number">2.2.</span> <span class="nav-text">参数接受格式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#返回参数"><span class="nav-number">2.3.</span> <span class="nav-text">返回参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Mybaits使用"><span class="nav-number">2.4.</span> <span class="nav-text">Mybaits使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#外部配置文件使用"><span class="nav-number">2.5.</span> <span class="nav-text">外部配置文件使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#邮件工具类"><span class="nav-number">2.6.</span> <span class="nav-text">邮件工具类</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫叶梨花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">88.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

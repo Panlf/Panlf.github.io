@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Kafka,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Kafka是一种高吞吐量的分布式发布订阅消息系统，因为其高吞吐量、分布式可扩展性等等强大功能使得在目前互联网系统中广泛使用。该篇博客入门了解一下Kafka的安装及使用。">
+<meta name="keywords" content="Kafka">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka安装与使用">
+<meta property="og:url" content="http://yoursite.com/2019/12/03/Kafka安装与使用/index.html">
+<meta property="og:site_name" content="梦起飞">
+<meta property="og:description" content="Kafka是一种高吞吐量的分布式发布订阅消息系统，因为其高吞吐量、分布式可扩展性等等强大功能使得在目前互联网系统中广泛使用。该篇博客入门了解一下Kafka的安装及使用。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-03T07:27:26.501Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kafka安装与使用">
+<meta name="twitter:description" content="Kafka是一种高吞吐量的分布式发布订阅消息系统，因为其高吞吐量、分布式可扩展性等等强大功能使得在目前互联网系统中广泛使用。该篇博客入门了解一下Kafka的安装及使用。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/12/03/Kafka安装与使用/">
+
+
+
+
+
+  <title>Kafka安装与使用 | 梦起飞</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梦起飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天行健，君子以自强不息</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/03/Kafka安装与使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="枫叶梨花">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梦起飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kafka安装与使用</h1>
+        
+
+        <div class="post-meta">
+			
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-03T09:04:47+08:00">
+                2019-12-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/消息中间件/" itemprop="url" rel="index">
+                    <span itemprop="name">消息中间件</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,089
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Kafka是一种高吞吐量的分布式发布订阅消息系统，因为其高吞吐量、分布式可扩展性等等强大功能使得在目前互联网系统中广泛使用。该篇博客入门了解一下Kafka的安装及使用。<br><a id="more"></a></p>
+<h3 id="Kafka概念"><a href="#Kafka概念" class="headerlink" title="Kafka概念"></a>Kafka概念</h3><p>Kafk是分布式消息队列。Kafka对消息保存时根据Topic进行归类，发送消息者称为Producer，消息接收者称为Consumer。此外kafka集群有多个kafka实例组成，每个实例(server)称为broker。其中每个Topic都由若干个partition组成，partition是topic物理上的分组，每个partition是一个有序的队列。Kafka的消费端有位移(offset)的概念，每条消息在某个partition的位移是固定的，相当于在分区当中的唯一编号。无论是kafka集群，还是consumer都依赖于Zookeeper集群保存一些meta信息，来保证系统可用性。</p>
+<h3 id="Kafka集群配置"><a href="#Kafka集群配置" class="headerlink" title="Kafka集群配置"></a>Kafka集群配置</h3><p>因为本机是Windows系统，测试方便就单机配置Kafka的集群，但是配置都是共通的，在服务器上也基本一样。</p>
+<p>配置版本</p>
+<ul>
+<li>Kafka 2.2.0</li>
+<li>Zookeeper 3.5.2</li>
+<li>Windows 7 </li>
+<li>Java 8 </li>
+</ul>
+<h4 id="配置Zookeeper"><a href="#配置Zookeeper" class="headerlink" title="配置Zookeeper"></a>配置Zookeeper</h4><p>1、<a href="https://zookeeper.apache.org/releases.html" target="_blank" rel="noopener">官网</a>根据版本下载Zookeeper</p>
+<p>2、解压Zookeeper的下载包，修改zoo.cfg中的dataDir地址，也可修改端口</p>
+<p>3、点击zkServer.cmd，启动Zookeeper</p>
+<h4 id="配置Kafka"><a href="#配置Kafka" class="headerlink" title="配置Kafka"></a>配置Kafka</h4><p>1、<a href="http://kafka.apache.org/downloads" target="_blank" rel="noopener">官网</a>根据版本下载Kafka</p>
+<p>2、解压Kafka的下载包，并复制三份，用于配置集群</p>
+<p>本机的目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">D:\kafka\KafkaCluster\kafka_9020</span><br><span class="line">D:\kafka\KafkaCluster\kafka_9021</span><br><span class="line">D:\kafka\KafkaCluster\kafka_9022</span><br></pre></td></tr></table></figure></p>
+<p>3、配置server.properties</p>
+<p>broker.id三份都需要唯一，目前设置为0,1,2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">broker.id=0</span><br></pre></td></tr></table></figure></p>
+<p>配置服务器端口，因为是单机所以IP地址一样，需要端口不一样。分别设置9020、9021、9022<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listeners=PLAINTEXT://:9020</span><br></pre></td></tr></table></figure></p>
+<p>设置log地址，分别设置/kafka_9020/、/kafka_9021/、/kafka_9022/<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">log.dirs=D:/kafka/KafkaCluster/kafka_9020/kafka-logs</span><br></pre></td></tr></table></figure></p>
+<p>并添加配置可删除Topic，如果不配置，Kafka只是标记删除<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delete.topic.enable=true</span><br></pre></td></tr></table></figure></p>
+<p>4、启动三个Kafka服务器</p>
+<p>分别在主目录/kafka_9020/、/kafka_9021/、/kafka_9022/主目录CMD窗口运行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\bin\windows\kafka-server-start.bat .\config\server.properties</span><br></pre></td></tr></table></figure>
+<p>上述正常即可配置成功。</p>
+<h3 id="测试Kafka"><a href="#测试Kafka" class="headerlink" title="测试Kafka"></a>测试Kafka</h3><p>配置是否成功，我们可以使用命令行操作查看。本机是Windows所以使用的都是bat文件，若到Linux则用sh文件。</p>
+<h4 id="创建Topic"><a href="#创建Topic" class="headerlink" title="创建Topic"></a>创建Topic</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --create --zookeeper [Zookeeper地址] --partitions [分区数] --replication-factor [副本集数] --topic [topic名称]</span><br></pre></td></tr></table></figure>
+<p>注意，副本集数不能大于不能大于Broker数，这里Broker数为3</p>
+<p>测试<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">D:\kafka\KafkaCluster\kafka_9020\bin\windows&gt;kafka-topics.bat --create --zookeeper localhost:2181 --partitions 1 </span><br><span class="line">--replication-factor 2 --topic kafka-topic-test</span><br><span class="line"></span><br><span class="line">Created topic kafka_topic_test.</span><br></pre></td></tr></table></figure></p>
+<h4 id="查看Topic列表"><a href="#查看Topic列表" class="headerlink" title="查看Topic列表"></a>查看Topic列表</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --list --zookeeper [Zookeeper地址]</span><br></pre></td></tr></table></figure>
+<p>测试<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">D:\kafka\KafkaCluster\kafka_9020\bin\windows&gt;kafka-topics.bat --list --zookeeper localhost:2181</span><br><span class="line">kafka-topic-test</span><br></pre></td></tr></table></figure></p>
+<h4 id="查看Topic详情"><a href="#查看Topic详情" class="headerlink" title="查看Topic详情"></a>查看Topic详情</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --zookeeper [Zookeeper地址] --describe --topic [topic名称]</span><br></pre></td></tr></table></figure>
+<p>测试<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">D:\kafka\KafkaCluster\kafka_9020\bin\windows&gt;kafka-topics.bat --zookeeper localh</span><br><span class="line">ost:2181 --describe --topic kafka_topic_test</span><br><span class="line">Topic:kafka_topic_test  PartitionCount:1        ReplicationFactor:2     Configs:</span><br><span class="line">Topic:kafka_topic_test  Partition: 0    Leader: 1       Replicas: 1,2  Isr: 1,2</span><br></pre></td></tr></table></figure></p>
+<h4 id="删除Topic"><a href="#删除Topic" class="headerlink" title="删除Topic"></a>删除Topic</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --delete --zookeeper [Zookeeper地址] --topic [topic名称]</span><br></pre></td></tr></table></figure>
+<p>测试<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">D:\kafka\KafkaCluster\kafka_9020\bin\windows&gt;kafka-topics.bat --delete --zookeeper localhost:2181 --topic kafka_topic_test</span><br><span class="line">Topic kafka_topic_test is marked for deletion.</span><br><span class="line">Note: This will have no impact if delete.topic.enable is not set to true.</span><br><span class="line"></span><br><span class="line">D:\kafka\KafkaCluster\kafka_9020\bin\windows&gt;kafka-topics.bat --list --zookeeper localhost:2181</span><br><span class="line">__consumer_offsets</span><br><span class="line">kafka_topic_test - marked for deletion</span><br></pre></td></tr></table></figure></p>
+<h4 id="消息生产和消费"><a href="#消息生产和消费" class="headerlink" title="消息生产和消费"></a>消息生产和消费</h4><p>启动生产端<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-console-producer.bat --broker-list [broker地址] --topic [topic名称]</span><br></pre></td></tr></table></figure></p>
+<p>启动消费端<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-console-consumer.bat --zookeeper [Zookeeper地址] --from-beginning --topic [topic名称]</span><br></pre></td></tr></table></figure></p>
+<p>测试</p>
+<p>生产端9020<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">D:\kafka\KafkaCluster\kafka_9020\bin\windows&gt;kafka-console-producer.bat --broker-list localhost:9020 --topic kafka_topic_test</span><br><span class="line">&gt;hello</span><br><span class="line">&gt;world</span><br><span class="line">&gt;kafka</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure></p>
+<p>消费端9021<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">D:\kafka\KafkaCluster\kafka_9021\bin\windows&gt;kafka-console-consumer.bat --bootstrap-server  localhost:9020 --from-beginning --topic kafka_topic_test</span><br><span class="line">hello</span><br><span class="line">world</span><br><span class="line">kafka</span><br></pre></td></tr></table></figure></p>
+<p>消费端9022<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">D:\kafka\KafkaCluster\kafka_9022\bin\windows&gt;kafka-console-consumer.bat --bootstrap-server  localhost:9020 --from-beginning --topic kafka_topic_test</span><br><span class="line">hello</span><br><span class="line">world</span><br><span class="line">kafka</span><br></pre></td></tr></table></figure></p>
+<h3 id="Java操作Kafka"><a href="#Java操作Kafka" class="headerlink" title="Java操作Kafka"></a>Java操作Kafka</h3><p>引入Jar<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.apache.kafka&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;kafka-clients&lt;/artifactId&gt;</span><br><span class="line">	&lt;version&gt;2.2.0&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p>消费端<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">import java.util.Properties;</span><br><span class="line"></span><br><span class="line">import org.apache.kafka.clients.producer.Callback;</span><br><span class="line">import org.apache.kafka.clients.producer.KafkaProducer;</span><br><span class="line">import org.apache.kafka.clients.producer.ProducerRecord;</span><br><span class="line">import org.apache.kafka.clients.producer.RecordMetadata;</span><br><span class="line"></span><br><span class="line">public class CustomerProducer &#123;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		//http://kafka.apache.org/documentation/#producerconfigs 更多配置可以访问此地址</span><br><span class="line">		//配置信息</span><br><span class="line">		Properties props = new Properties();</span><br><span class="line">		</span><br><span class="line">		//设置kafka集群的地址 -- localhost:9020,localhost:9021,localhost:9022</span><br><span class="line">        props.put(&quot;bootstrap.servers&quot;, &quot;localhost:9020,localhost:9021,localhost:9022&quot;);</span><br><span class="line">        </span><br><span class="line">        //ack模式，all是最慢但最安全的</span><br><span class="line">        // 0  不等待成功返回  </span><br><span class="line">        // 1  等Leader写成功返回  </span><br><span class="line">        //all 等Leader和所有ISR中的Follower写成功返回,all也可以用-1代替</span><br><span class="line">        props.put(&quot;acks&quot;, &quot;all&quot;);</span><br><span class="line">        </span><br><span class="line">        //失败重试次数</span><br><span class="line">        props.put(&quot;retries&quot;, 0);</span><br><span class="line">        </span><br><span class="line">        //每个分区未发送消息总字节大小（单位：字节），超过设置的值就会提交数据到服务端</span><br><span class="line">        props.put(&quot;batch.size&quot;, 16384);</span><br><span class="line">        </span><br><span class="line">        //请求的最大字节数，该值要比batch.size大</span><br><span class="line">        //不建议去更改这个值，如果设置不好会导致程序不报错，但消息又没有发送成功</span><br><span class="line">        //props.put(&quot;max.request.size&quot;,1048576);</span><br><span class="line">        </span><br><span class="line">        //消息在缓冲区保留的时间，超过设置的值就会被提交到服务端</span><br><span class="line">        //数据在缓冲区中保留的时长,0表示立即发送</span><br><span class="line">        //为了减少网络耗时，需要设置这个值，太大可能容易导致缓冲区满，阻塞消费者，太小容易频繁请求服务端</span><br><span class="line">        props.put(&quot;linger.ms&quot;, 1);</span><br><span class="line">        </span><br><span class="line">        //整个Producer用到总内存的大小，如果缓冲区满了会提交数据到服务端</span><br><span class="line">        //buffer.memory要大于batch.size，否则会报申请内存不足的错误</span><br><span class="line">        //不要超过物理内存，根据实际情况调整</span><br><span class="line">        props.put(&quot;buffer.memory&quot;, 33554432);</span><br><span class="line">        //序列化器</span><br><span class="line">        props.put(&quot;key.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);</span><br><span class="line">        props.put(&quot;value.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);</span><br><span class="line">        </span><br><span class="line">        //创建生产者对象</span><br><span class="line">        KafkaProducer&lt;String,String&gt; producer = new KafkaProducer&lt;&gt;(props);</span><br><span class="line">        </span><br><span class="line">        //循环发送消息</span><br><span class="line">        for(int i=10;i&lt;20;i++)&#123;</span><br><span class="line">        	producer.send(new ProducerRecord&lt;String, String&gt;(&quot;kafka-topic-test&quot;, Integer.toString(i)),new Callback() &#123;</span><br><span class="line">				</span><br><span class="line">				@Override</span><br><span class="line">				public void onCompletion(RecordMetadata metadata, Exception exception) &#123;</span><br><span class="line">					if(exception == null)&#123;</span><br><span class="line">						System.out.println(metadata.partition()+&quot; - &quot;+metadata.offset());</span><br><span class="line">					&#125;else&#123;</span><br><span class="line">						System.out.println(&quot;发送失败&quot;);</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        //关闭资源</span><br><span class="line">        producer.close();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>生产端<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">import java.time.Duration;</span><br><span class="line">import java.util.Collections;</span><br><span class="line">import java.util.Properties;</span><br><span class="line"></span><br><span class="line">import org.apache.kafka.clients.consumer.ConsumerRecord;</span><br><span class="line">import org.apache.kafka.clients.consumer.ConsumerRecords;</span><br><span class="line">import org.apache.kafka.clients.consumer.KafkaConsumer;</span><br><span class="line"></span><br><span class="line">public class CustomerConsumer &#123;</span><br><span class="line">	</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		Properties props = new Properties();</span><br><span class="line">		</span><br><span class="line">		//设置kafka集群的地址</span><br><span class="line">		props.put(&quot;bootstrap.servers&quot;, &quot;localhost:9020,localhost:9021,localhost:9022&quot;);</span><br><span class="line">        </span><br><span class="line">        //消费者组ID</span><br><span class="line">		props.put(&quot;group.id&quot;, &quot;test-consumer-group&quot;);</span><br><span class="line">        </span><br><span class="line">        //设置自动提交offset</span><br><span class="line">		props.put(&quot;enable.auto.commit&quot;, &quot;true&quot;);</span><br><span class="line">        //自动提交间隔</span><br><span class="line">		props.put(&quot;auto.commit.interval.ms&quot;, &quot;1000&quot;);</span><br><span class="line">        </span><br><span class="line">        //earliest </span><br><span class="line">        //当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，从头开始消费</span><br><span class="line">        //latest</span><br><span class="line">        //当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，消费新产生的该分区下的数据</span><br><span class="line">        //none</span><br><span class="line">        //topic各分区都存在已提交的offset时，从offset后开始消费；只要有一个分区不存在已提交的offset，则抛出异常</span><br><span class="line">        //默认建议用earliest。设置该参数后 kafka出错后重启，找到未消费的offset可以继续消费。</span><br><span class="line">		props.put(&quot;auto.offset.reset&quot;, &quot;earliest&quot;);</span><br><span class="line">       </span><br><span class="line">        //Consumer session 过期时间</span><br><span class="line">		props.put(&quot;session.timeout.ms&quot;, &quot;30000&quot;);</span><br><span class="line">        </span><br><span class="line">        //反序列化器</span><br><span class="line">		props.put(&quot;key.deserializer&quot;, &quot;org.apache.kafka.common.serialization.StringDeserializer&quot;);</span><br><span class="line">		props.put(&quot;value.deserializer&quot;, &quot;org.apache.kafka.common.serialization.StringDeserializer&quot;);</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">        //创建消费者对象</span><br><span class="line">        @SuppressWarnings(&quot;resource&quot;)</span><br><span class="line">		KafkaConsumer&lt;Object, Object&gt; consumer = new KafkaConsumer&lt;&gt;(props);</span><br><span class="line">        </span><br><span class="line">        //指定Topic</span><br><span class="line">        //consumer.subscribe(Arrays.asList(&quot;first&quot;,&quot;second&quot;,&quot;third&quot;));</span><br><span class="line">        consumer.subscribe(Collections.singletonList(&quot;kafka-topic-test&quot;));</span><br><span class="line">        </span><br><span class="line">        while (true) &#123;</span><br><span class="line">	        //获取数据</span><br><span class="line">	        ConsumerRecords&lt;Object, Object&gt; consumerRecords = consumer.poll(Duration.ofMillis(100));</span><br><span class="line">	        </span><br><span class="line">	        for (ConsumerRecord&lt;Object, Object&gt; consumerRecord : consumerRecords) &#123;</span><br><span class="line">				System.out.println(consumerRecord.topic()+&quot;:&quot;</span><br><span class="line">						+consumerRecord.partition()+&quot;:&quot;</span><br><span class="line">						+consumerRecord.value());</span><br><span class="line">			&#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line"> 	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本博客只是在如何搭建Kafka的集群和Java简单操作Kafka这两块地方做了功夫，整体是比较简单，属于入门级知识，主要是因为kafka很多架构性和概念性的东西我自己也很多不清楚，接下来我会在这方面更加深入理解，然后继续整理成博客发布。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Kafka/" rel="tag"><i class="fa fa-tag"></i> Kafka</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/15/基于SpringBoot和Freemarker的页面静态化/" rel="next" title="基于SpringBoot和Freemarker的页面静态化">
+                <i class="fa fa-chevron-left"></i> 基于SpringBoot和Freemarker的页面静态化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/05/Spring-Session实现分布式Session共享/" rel="prev" title="Spring Session实现分布式Session共享">
+                Spring Session实现分布式Session共享 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">枫叶梨花</p>
+              <p class="site-description motion-element" itemprop="description">正在努力提高技术的小码农</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/user/5839013461ff4b007ec2d4c4/posts?sort=popular" title="枫叶梨花" target="_blank">枫叶梨花</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Kafka概念"><span class="nav-number">1.</span> <span class="nav-text">Kafka概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kafka集群配置"><span class="nav-number">2.</span> <span class="nav-text">Kafka集群配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#配置Zookeeper"><span class="nav-number">2.1.</span> <span class="nav-text">配置Zookeeper</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置Kafka"><span class="nav-number">2.2.</span> <span class="nav-text">配置Kafka</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试Kafka"><span class="nav-number">3.</span> <span class="nav-text">测试Kafka</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建Topic"><span class="nav-number">3.1.</span> <span class="nav-text">创建Topic</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看Topic列表"><span class="nav-number">3.2.</span> <span class="nav-text">查看Topic列表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看Topic详情"><span class="nav-number">3.3.</span> <span class="nav-text">查看Topic详情</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除Topic"><span class="nav-number">3.4.</span> <span class="nav-text">删除Topic</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#消息生产和消费"><span class="nav-number">3.5.</span> <span class="nav-text">消息生产和消费</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java操作Kafka"><span class="nav-number">4.</span> <span class="nav-text">Java操作Kafka</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫叶梨花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">88.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

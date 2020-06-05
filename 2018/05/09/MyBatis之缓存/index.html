@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="缓存,MyBatis,ORM框架,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="缓存是目前互联网系统中很重要的一部分，就是将数据存储到内存中，需要的时候直接从内存中读取，无需从数据库中读取，所以具备快速读取和使用的特点，可以提高系统性能。">
+<meta name="keywords" content="缓存,MyBatis,ORM框架">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MyBatis之缓存">
+<meta property="og:url" content="http://yoursite.com/2018/05/09/MyBatis之缓存/index.html">
+<meta property="og:site_name" content="梦起飞">
+<meta property="og:description" content="缓存是目前互联网系统中很重要的一部分，就是将数据存储到内存中，需要的时候直接从内存中读取，无需从数据库中读取，所以具备快速读取和使用的特点，可以提高系统性能。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-01-18T11:23:17.386Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MyBatis之缓存">
+<meta name="twitter:description" content="缓存是目前互联网系统中很重要的一部分，就是将数据存储到内存中，需要的时候直接从内存中读取，无需从数据库中读取，所以具备快速读取和使用的特点，可以提高系统性能。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/05/09/MyBatis之缓存/">
+
+
+
+
+
+  <title>MyBatis之缓存 | 梦起飞</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梦起飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天行健，君子以自强不息</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/09/MyBatis之缓存/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="枫叶梨花">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梦起飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MyBatis之缓存</h1>
+        
+
+        <div class="post-meta">
+			
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-09T14:20:12+08:00">
+                2018-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java框架/" itemprop="url" rel="index">
+                    <span itemprop="name">Java框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,419
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  11
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>缓存是目前互联网系统中很重要的一部分，就是将数据存储到内存中，需要的时候直接从内存中读取，无需从数据库中读取，所以具备快速读取和使用的特点，可以提高系统性能。<br><a id="more"></a></p>
+<p>现在<code>MyBatis</code>因其灵活性使用率很高，而且<code>MyBatis</code>也提供缓存功能，所以也可了解一下。<code>MyBatis</code>提供一级缓存和二级缓存，一级缓存（同一个<code>sqlSession</code>共享数据）是默认开启的而且不能关闭，二级缓存（不同的<code>sqlSession</code>之间共享数据）是需要配置开启的。</p>
+<h3 id="MyBatis之一级缓存"><a href="#MyBatis之一级缓存" class="headerlink" title="MyBatis之一级缓存"></a>MyBatis之一级缓存</h3><p>一级缓存是默认开启的，只要是同一个<code>sqlSession</code>，第二次查询就会从缓存中读取数据。不过如果跟<code>Spring</code>集成后，一级缓存就会失效。原因就是<code>MyBatis</code>的一级缓存是需要同一个<code>sqlSession</code>，但是<code>Spring</code>会在<code>sqlSession</code>使用完毕后就会关闭，这样缓存数据将会清空。当第二个请求，重新新建<code>sqlSession</code>，然后又去请求数据库。目前我们一般是跟<code>Spring</code>整合使用，但是因为这个原因只能寻求其二级缓存。</p>
+<h3 id="MyBatis之二级缓存"><a href="#MyBatis之二级缓存" class="headerlink" title="MyBatis之二级缓存"></a>MyBatis之二级缓存</h3><h4 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h4><p>一级缓存无法实现，但是<code>MyBatis</code>提供二级缓存，而且配置比较简单，首先需要返回的<code>POJO类</code>必须可序列化，即要求实现<code>Serializable接口</code>，然后在XML文件中配置<code>&lt;cache /&gt;</code></p>
+<p>配置缓存可以使用不同的参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;cache eviction=&quot;LRU&quot; flushInterval=&quot;100000&quot; size=&quot;1024&quot; readOnly=&quot;true&quot; /&gt;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><code>eviction</code> 代表缓存回收策略，目前MyBatis提供以下回收策略。（1）LRU，最近最少使用的，移除最长时间不用的对象。（2）FIFO，先进先出，按对象进入缓存的顺序来移除他们。（3）SOFT，软引用，移除基于垃圾回收器状态和软引用规则的对象。（4）WEAK，弱引用，更积极地移除基于垃圾收集器状态和弱引用规则的对象。</li>
+<li><code>flushInterval</code> 刷新间隔时间，单位为毫秒，如果不配置，那么当SQL被执行的时候才会去刷新缓存。</li>
+<li><code>size</code> 引用数目，代表缓存最多可以存储多少对象，不宜设置过大，不然会导致内存溢出。</li>
+<li><code>readOnly</code> 只读，意味着缓存数据只能读取而不能修改。</li>
+</ul>
+<h4 id="全局-局部配置"><a href="#全局-局部配置" class="headerlink" title="全局/局部配置"></a>全局/局部配置</h4><p>全局配置：默认就是true，一般不用配置，配置就是取消二级缓存，意义不大。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;settings&gt;</span><br><span class="line">	&lt;!-- 二级缓存总开关 --&gt;</span><br><span class="line">	&lt;setting name=&quot;cacheEnabled&quot; value=&quot;false&quot;/&gt;</span><br><span class="line">&lt;/settings&gt;</span><br></pre></td></tr></table></figure></p>
+<p>局部配置：使用<code>useCache</code>和<code>flushCache</code>，前者表示是否需要使用缓存，而后者表示插入后是否需要刷新缓存。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;select ... flushCache=&quot;false&quot; useCache=&quot;true&quot; /&gt;</span><br><span class="line">&lt;insert ... flushCache=&quot;true&quot; /&gt;</span><br><span class="line">&lt;update ... flushCache=&quot;true&quot; /&gt;</span><br><span class="line">&lt;delete ... flushCache=&quot;true&quot; /&gt;</span><br></pre></td></tr></table></figure></p>
+<h4 id="使用原则"><a href="#使用原则" class="headerlink" title="使用原则"></a>使用原则</h4><p><strong>（1） 多个namespace不要操作同一张表</strong></p>
+<p>二级缓存中的数据是基于namespace的，不同的namespace的数据互不干扰，如果某namespace中的进行增删改而造成缓存刷新，只会引起该namespace中的二级缓存数据刷新，不会对其他namespace下的数据有影响，所以从其他namespace中读取的数据还是未更新的。</p>
+<p><strong>（2）不要在关联关系表上执行增删改操作</strong></p>
+<p>一个namespace一般是同一个表进行操作，若表间存在关联关系，也就意味着同一个表可能出现在多个namespace下，这样就会存在上述讲到的风险。</p>
+<p><strong>（3）查询多于修改时使用二级缓存</strong></p>
+<p>二级缓存频繁刷新容易降低系统性能。</p>
+<h4 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h4><p>Department.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public class Department implements Serializable</span><br></pre></td></tr></table></figure></p>
+<p>DepartmentMapper.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;cache/&gt;</span><br></pre></td></tr></table></figure></p>
+<p>测试<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void testDepartment()&#123;</span><br><span class="line">	try &#123;</span><br><span class="line">		System.out.println(&quot;=================================&quot;);</span><br><span class="line">		MvcResult result1=mockMvc.perform(MockMvcRequestBuilders</span><br><span class="line">				.get(&quot;/depts&quot;))</span><br><span class="line">		.andReturn();</span><br><span class="line">		MvcResult result2=mockMvc.perform(MockMvcRequestBuilders</span><br><span class="line">				.get(&quot;/depts&quot;))</span><br><span class="line">		.andReturn();</span><br><span class="line">	</span><br><span class="line">		System.out.println(result1.getResponse().getContentAsString());</span><br><span class="line">		System.out.println(result2.getResponse().getContentAsString());</span><br><span class="line">		System.out.println(&quot;=================================&quot;);</span><br><span class="line">	&#125; catch (Exception e) &#123;</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">.</span><br><span class="line">.</span><br><span class="line">2018-05-09 11:46:44,987 [main] DEBUG [org.mybatis.spring.SqlSessionUtils] - Creating a new SqlSession</span><br><span class="line">2018-05-09 11:46:45,012 [main] DEBUG [org.mybatis.spring.SqlSessionUtils] - Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2063c53e]</span><br><span class="line">2018-05-09 11:46:45,075 [main] DEBUG [com.plf.hello.dao.DepartmentMapper] - Cache Hit Ratio [com.plf.hello.dao.DepartmentMapper]: 0.0</span><br><span class="line">2018-05-09 11:46:45,085 [main] DEBUG [org.mybatis.spring.transaction.SpringManagedTransaction] - JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@5ce4369b] will be managed by Spring</span><br><span class="line">2018-05-09 11:46:45,095 [main] DEBUG [com.plf.hello.dao.DepartmentMapper.selectByExample] - ==&gt;  Preparing: select dept_id, dept_name from tbl_dept </span><br><span class="line">2018-05-09 11:46:45,149 [main] DEBUG [com.plf.hello.dao.DepartmentMapper.selectByExample] - ==&gt; Parameters: </span><br><span class="line">2018-05-09 11:46:45,216 [main] DEBUG [com.plf.hello.dao.DepartmentMapper.selectByExample] - &lt;==      Total: 2</span><br><span class="line">2018-05-09 11:46:45,217 [main] DEBUG [com.alibaba.druid.pool.PreparedStatementPool] - &#123;conn-10001, pstmt-20000&#125; enter cache</span><br><span class="line">2018-05-09 11:46:45,218 [main] DEBUG [org.mybatis.spring.SqlSessionUtils] - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2063c53e]</span><br><span class="line">2018-05-09 11:46:45,218 [main] DEBUG [org.mybatis.spring.SqlSessionUtils] - Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2063c53e]</span><br><span class="line">2018-05-09 11:46:45,301 [main] DEBUG [org.mybatis.spring.SqlSessionUtils] - Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2063c53e]</span><br><span class="line">2018-05-09 11:46:45,301 [main] DEBUG [org.mybatis.spring.SqlSessionUtils] - Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2063c53e]</span><br><span class="line">2018-05-09 11:46:45,301 [main] DEBUG [org.springframework.jdbc.datasource.DataSourceTransactionManager] - Initiating transaction commit</span><br><span class="line">2018-05-09 11:46:45,301 [main] DEBUG [org.springframework.jdbc.datasource.DataSourceTransactionManager] - Committing JDBC transaction on Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@5ce4369b]</span><br><span class="line">2018-05-09 11:46:45,306 [main] DEBUG [org.springframework.jdbc.datasource.DataSourceTransactionManager] - Releasing JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@5ce4369b] after transaction</span><br><span class="line">.</span><br><span class="line">.</span><br><span class="line">.</span><br><span class="line">2018-05-09 11:46:45,493 [main] DEBUG [com.plf.hello.dao.DepartmentMapper] - Cache Hit Ratio [com.plf.hello.dao.DepartmentMapper]: 0.5</span><br><span class="line">2018-05-09 11:46:45,493 [main] DEBUG [org.mybatis.spring.SqlSessionUtils] - Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4248e66b]</span><br><span class="line">2018-05-09 11:46:45,493 [main] DEBUG [org.mybatis.spring.SqlSessionUtils] - Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4248e66b]</span><br><span class="line">2018-05-09 11:46:45,493 [main] DEBUG [org.mybatis.spring.SqlSessionUtils] - Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4248e66b]</span><br><span class="line">2018-05-09 11:46:45,493 [main] DEBUG [org.mybatis.spring.SqlSessionUtils] - Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4248e66b]</span><br><span class="line">2018-05-09 11:46:45,493 [main] DEBUG [org.springframework.jdbc.datasource.DataSourceTransactionManager] - Initiating transaction commit</span><br><span class="line">2018-05-09 11:46:45,493 [main] DEBUG [org.springframework.jdbc.datasource.DataSourceTransactionManager] - Committing JDBC transaction on Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@5ce4369b]</span><br><span class="line">2018-05-09 11:46:45,497 [main] DEBUG [org.springframework.jdbc.datasource.DataSourceTransactionManager] - Releasing JDBC Connection [com.alibaba.druid.proxy.jdbc.ConnectionProxyImpl@5ce4369b] after transaction</span><br><span class="line">.</span><br><span class="line">.</span><br><span class="line">.</span><br><span class="line">&#123;&quot;code&quot;:100,&quot;msg&quot;:&quot;处理成功&quot;,&quot;extend&quot;:&#123;&quot;depts&quot;:[&#123;&quot;deptId&quot;:1,&quot;deptName&quot;:&quot;技术部&quot;&#125;,&#123;&quot;deptId&quot;:2,&quot;deptName&quot;:&quot;餐饮部&quot;&#125;]&#125;&#125;</span><br><span class="line">&#123;&quot;code&quot;:100,&quot;msg&quot;:&quot;处理成功&quot;,&quot;extend&quot;:&#123;&quot;depts&quot;:[&#123;&quot;deptId&quot;:1,&quot;deptName&quot;:&quot;技术部&quot;&#125;,&#123;&quot;deptId&quot;:2,&quot;deptName&quot;:&quot;餐饮部&quot;&#125;]&#125;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上述结果可知使用二级缓存，只请求了一次SQL语句，其中<code>Cache Hit Ratio [com.plf.hello.dao.DepartmentMapper]: 0.5</code>显示缓存命中率0.5。</p>
+<h3 id="Ehcache缓存"><a href="#Ehcache缓存" class="headerlink" title="Ehcache缓存"></a>Ehcache缓存</h3><p>MyBatis毕竟是用于操作SQL的，在缓存方面肯定不如其他的缓存更实用，目前比较多的就是Ehcache、Redis、MongoDB等用作缓存，这里主要实现Spring+Ehcache的缓存</p>
+<p>pom.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;net.sf.ehcache&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;ehcache-core&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.6.11&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p>ehcache.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&lt;ehcache xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;  </span><br><span class="line">   xsi:noNamespaceSchemaLocation=&quot;http://ehcache.org/ehcache.xsd&quot;&gt;  	</span><br><span class="line">&lt;!-- 缓存数据要存放的磁盘地址 --&gt;</span><br><span class="line">&lt;diskStore path=&quot;E:\temp\ehcache&quot; /&gt;</span><br><span class="line">&lt;!-- </span><br><span class="line">diskStore：指定数据在磁盘中的存储位置。</span><br><span class="line">defaultCache：当借助CacheManager.add(&quot;demoCache&quot;)创建Cache时，EhCache便会采用&lt;defalutCache/&gt;指定的的管理策略 </span><br><span class="line">以下属性是必须的： </span><br><span class="line">maxElementsInMemory - 在内存中缓存的element的最大数目 </span><br><span class="line">maxElementsOnDisk - 在磁盘上缓存的element的最大数目，若是0表示无穷大 </span><br><span class="line">eternal - 设定缓存的elements是否永远不过期。如果为true，则缓存的数据始终有效，如果为false那么还要根据timeToIdleSeconds，timeToLiveSeconds判断 </span><br><span class="line">overflowToDisk - 设定当内存缓存溢出的时候是否将过期的element缓存到磁盘上</span><br><span class="line">以下属性是可选的：</span><br><span class="line">timeToIdleSeconds - 当缓存在EhCache中的数据前后两次访问的时间超过timeToIdleSeconds的属性取值时，这些数据便会删除，默认值是0,也就是可闲置时间无穷大 </span><br><span class="line">timeToLiveSeconds - 缓存element的有效生命期，默认是0.,也就是element存活时间无穷大 </span><br><span class="line">diskSpoolBufferSizeMB 这个参数设置DiskStore(磁盘缓存)的缓存区大小.默认是30MB.每个Cache都应该有自己的一个缓冲区.</span><br><span class="line">diskPersistent - 在VM重启的时候是否启用磁盘保存EhCache中的数据，默认是false。 </span><br><span class="line">diskExpiryThreadIntervalSeconds - 磁盘缓存的清理线程运行间隔，默认是120秒。每个120s，相应的线程会进行一次EhCache中数据的清理工作 </span><br><span class="line">memoryStoreEvictionPolicy - 当内存缓存达到最大，有新的element加入的时候， 移除缓存中element的策略。默认是LRU（最近最少使用），可选的有LFU（最不常使用）和FIFO（先进先出） --&gt;</span><br><span class="line"></span><br><span class="line">	&lt;defaultCache</span><br><span class="line">	 	maxElementsInMemory=&quot;1000&quot; </span><br><span class="line">	 	maxElementsOnDisk=&quot;10000000&quot; </span><br><span class="line">	 	eternal=&quot;false&quot; </span><br><span class="line">	 	overflowToDisk=&quot;false&quot; </span><br><span class="line">	 	timeToIdleSeconds=&quot;120&quot; </span><br><span class="line">	 	timeToLiveSeconds=&quot;120&quot; </span><br><span class="line">	 	diskExpiryThreadIntervalSeconds=&quot;120&quot; </span><br><span class="line">		memoryStoreEvictionPolicy=&quot;LRU&quot;&gt;</span><br><span class="line">	&lt;/defaultCache&gt;</span><br><span class="line">	</span><br><span class="line">	 &lt;cache name=&quot;myCache&quot;</span><br><span class="line">        eternal=&quot;false&quot; </span><br><span class="line">	 	overflowToDisk=&quot;false&quot; </span><br><span class="line">	 	timeToIdleSeconds=&quot;120&quot; </span><br><span class="line">	 	timeToLiveSeconds=&quot;120&quot; </span><br><span class="line">	 	diskExpiryThreadIntervalSeconds=&quot;120&quot; </span><br><span class="line">		memoryStoreEvictionPolicy=&quot;LRU&quot;/&gt;</span><br><span class="line"></span><br><span class="line">&lt;/ehcache&gt;</span><br></pre></td></tr></table></figure></p>
+<p>applicationContext.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">xmlns:cache=&quot;http://www.springframework.org/schema/cache&quot;</span><br><span class="line"></span><br><span class="line">xsi:schemaLocation=&quot;http://www.springframework.org/schema/cache </span><br><span class="line">http://www.springframework.org/schema/cache/spring-cache-4.3.xsd&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;cache:annotation-driven cache-manager=&quot;cacheManager&quot;/&gt;</span><br><span class="line">    </span><br><span class="line">&lt;bean id=&quot;ehcacheManager&quot; class=&quot;org.springframework.cache.ehcache.EhCacheManagerFactoryBean&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;configLocation&quot; value=&quot;classpath:ehcache.xml&quot;/&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;bean id=&quot;cacheManager&quot; class=&quot;org.springframework.cache.ehcache.EhCacheCacheManager&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;cacheManager&quot; ref=&quot;ehcacheManager&quot;/&gt;</span><br><span class="line">	&lt;property name=&quot;transactionAware&quot; value=&quot;true&quot;/&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
+<p>DepartmentService.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Cacheable(value = &quot;myCache&quot;)</span><br><span class="line">public List&lt;Department&gt; getDepts() &#123;</span><br><span class="line">	return departmentMapper.selectByExample(null);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>为了提高性能，缓存也越来越被重视，而且在系统中的使用也越发广泛。其实实现缓存很简单，而使用缓存的策略才是重点和难点，在合适的地方、时间使用才是麻烦之处，这个是需要大量的项目经验积累的，提高缓存的命中率才是我们所需要提高和关注的。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/缓存/" rel="tag"><i class="fa fa-tag"></i> 缓存</a>
+          
+            <a href="/tags/MyBatis/" rel="tag"><i class="fa fa-tag"></i> MyBatis</a>
+          
+            <a href="/tags/ORM框架/" rel="tag"><i class="fa fa-tag"></i> ORM框架</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/08/MongoDB之索引/" rel="next" title="MongoDB之索引">
+                <i class="fa fa-chevron-left"></i> MongoDB之索引
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/13/Gradle的依赖范围/" rel="prev" title="Gradle的依赖范围">
+                Gradle的依赖范围 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">枫叶梨花</p>
+              <p class="site-description motion-element" itemprop="description">正在努力提高技术的小码农</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/user/5839013461ff4b007ec2d4c4/posts?sort=popular" title="枫叶梨花" target="_blank">枫叶梨花</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#MyBatis之一级缓存"><span class="nav-number">1.</span> <span class="nav-text">MyBatis之一级缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MyBatis之二级缓存"><span class="nav-number">2.</span> <span class="nav-text">MyBatis之二级缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#配置"><span class="nav-number">2.1.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#全局-局部配置"><span class="nav-number">2.2.</span> <span class="nav-text">全局/局部配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用原则"><span class="nav-number">2.3.</span> <span class="nav-text">使用原则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#案例"><span class="nav-number">2.4.</span> <span class="nav-text">案例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ehcache缓存"><span class="nav-number">3.</span> <span class="nav-text">Ehcache缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫叶梨花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">88.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

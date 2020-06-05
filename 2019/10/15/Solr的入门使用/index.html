@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="solr,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Solr是Apache下的一个顶级开源项目，采用Java开发，它是基于Lucene的全文搜索服务器。Solr提供了比Lucene更为丰富的查询语言，同时实现了可配置、可扩展，并对索引、搜索性能进行了优化，被很多需要搜索的网站中广泛使用。">
+<meta name="keywords" content="solr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Solr的入门使用">
+<meta property="og:url" content="http://yoursite.com/2019/10/15/Solr的入门使用/index.html">
+<meta property="og:site_name" content="梦起飞">
+<meta property="og:description" content="Solr是Apache下的一个顶级开源项目，采用Java开发，它是基于Lucene的全文搜索服务器。Solr提供了比Lucene更为丰富的查询语言，同时实现了可配置、可扩展，并对索引、搜索性能进行了优化，被很多需要搜索的网站中广泛使用。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-03-18T05:43:39.261Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Solr的入门使用">
+<meta name="twitter:description" content="Solr是Apache下的一个顶级开源项目，采用Java开发，它是基于Lucene的全文搜索服务器。Solr提供了比Lucene更为丰富的查询语言，同时实现了可配置、可扩展，并对索引、搜索性能进行了优化，被很多需要搜索的网站中广泛使用。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/15/Solr的入门使用/">
+
+
+
+
+
+  <title>Solr的入门使用 | 梦起飞</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">梦起飞</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天行健，君子以自强不息</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/15/Solr的入门使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="枫叶梨花">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梦起飞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Solr的入门使用</h1>
+        
+
+        <div class="post-meta">
+			
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-15T09:15:26+08:00">
+                2019-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/搜索引擎/" itemprop="url" rel="index">
+                    <span itemprop="name">搜索引擎</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1,874
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Solr是Apache下的一个顶级开源项目，采用Java开发，它是基于Lucene的全文搜索服务器。Solr提供了比Lucene更为丰富的查询语言，同时实现了可配置、可扩展，并对索引、搜索性能进行了优化，被很多需要搜索的网站中广泛使用。<br><a id="more"></a></p>
+<blockquote>
+<p>Solr基于Lucene的Java搜索引擎服务器，其主要功能包括全文检索、命中标示、分面搜索、动态聚类、数据库集成，以及富文本（如Word、PDF）的处理。Solr是高度可扩展的，并提供了分布式搜索和索引复制。</p>
+</blockquote>
+<h3 id="Solr安装"><a href="#Solr安装" class="headerlink" title="Solr安装"></a>Solr安装</h3><p>目前使用环境：</p>
+<ul>
+<li>Java 1.8</li>
+<li>Solr 8.2.0版本</li>
+<li>Windows7</li>
+</ul>
+<h4 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h4><p>我们可在<a href="http://lucene.apache.org/solr/downloads.html" target="_blank" rel="noopener">官网</a>下载Solr对应的版本。下载到相应位置并解压，可看到不同的文件目录。</p>
+<ul>
+<li>bin：solr的运行脚本</li>
+<li>contrib：solr的一些扩展jar包，用于增强solr的功能</li>
+<li>dist：该目录包含build过程中产生的jar文件，以及相关的依赖文件</li>
+<li>example：solr工程的例子目录</li>
+<li>licenses：solr相关的一些许可信息</li>
+</ul>
+<h4 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h4><p>进入到bin目录，打开cmd窗口，运行<code>solr start</code>即可启动。Solr默认端口为8983，启动成功后可在浏览器访问<code>localhost:8983/solr</code>，如若启动成功，可看到Solr管理界面。</p>
+<p>solr的操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">启动  	solr start</span><br><span class="line">停止  	solr stop</span><br><span class="line">重启		solr restart</span><br><span class="line">状态  	solr status</span><br></pre></td></tr></table></figure></p>
+<h4 id="配置中文分词器"><a href="#配置中文分词器" class="headerlink" title="配置中文分词器"></a>配置中文分词器</h4><p>Solr默认没有中文分词器，作为国人需要自己安装中文分词器，我使用的是<code>IK-Analyzer-Solr8</code>分词器。可在<a href="https://search.maven.org/search?q=com.github.magese" target="_blank" rel="noopener">如下地址</a>下载Jar包。</p>
+<p>将下载的Jar包放入到<code>~\solr-8.2.0\server\solr-webapp\webapp\WEB-INF\lib</code>目录下，并配置<code>~\solr-8.2.0\server\solr\configsets\_default\conf\managed-schema</code>文件,加入以下配置代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;dynamicField name=&quot;*_txt_ik&quot; type=&quot;text_ik&quot;  indexed=&quot;true&quot;  stored=&quot;true&quot;/&gt;</span><br><span class="line">&lt;fieldType name=&quot;text_ik&quot; class=&quot;solr.TextField&quot;&gt;</span><br><span class="line">	&lt;analyzer type=&quot;index&quot;&gt;</span><br><span class="line">		&lt;tokenizer class=&quot;org.wltea.analyzer.lucene.IKTokenizerFactory&quot; useSmart=&quot;false&quot; conf=&quot;ik.conf&quot;/&gt;</span><br><span class="line">		&lt;filter class=&quot;solr.LowerCaseFilterFactory&quot;/&gt;</span><br><span class="line">	&lt;/analyzer&gt;</span><br><span class="line">	&lt;analyzer type=&quot;query&quot;&gt;</span><br><span class="line">		&lt;tokenizer class=&quot;org.wltea.analyzer.lucene.IKTokenizerFactory&quot; useSmart=&quot;true&quot; conf=&quot;ik.conf&quot;/&gt;</span><br><span class="line">		&lt;filter class=&quot;solr.LowerCaseFilterFactory&quot;/&gt;</span><br><span class="line">	&lt;/analyzer&gt;</span><br><span class="line">&lt;/fieldType&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="创建Core"><a href="#创建Core" class="headerlink" title="创建Core"></a>创建Core</h4><p>在Solr中，每一个Core代表一个索引库，里面包含索引数据及其配置信息。Solr中可以拥有多个Core，也就是同进管理多个索引库、就像MySQL中可以有多个数据库一样。</p>
+<p>Solr的bin目录下打开cmd窗口，运行<code>solr create -c test_solr</code>，<code>test_solr</code>是core名，可以自定义修改。创建成功后，会在<code>~\solr-8.2.0\server\solr</code>中出现相应的文件夹，里面需要注意managed-schema、solrconfig.xml两个配置文件。managed-schema定义了索引库的数据类型,同时指明某个类型的字段是不是要进行索引,是不是要进行保存到索引库里等等。solrconfig.xml则是包含了很多solr自身配置相关的参数。</p>
+<p>这样我们就可以在Solr界面进行插入Field、插入数据、查询数据等等操作了。</p>
+<h3 id="Java操作Solr"><a href="#Java操作Solr" class="headerlink" title="Java操作Solr"></a>Java操作Solr</h3><h4 id="引入Jar包"><a href="#引入Jar包" class="headerlink" title="引入Jar包"></a>引入Jar包</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.apache.solr&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;solr-solrj&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;8.2.0&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="定义对象"><a href="#定义对象" class="headerlink" title="定义对象"></a>定义对象</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import org.apache.solr.client.solrj.beans.Field;</span><br><span class="line"></span><br><span class="line">import lombok.AllArgsConstructor;</span><br><span class="line">import lombok.Data;</span><br><span class="line">import lombok.NoArgsConstructor;</span><br><span class="line"></span><br><span class="line">@Data</span><br><span class="line">@AllArgsConstructor</span><br><span class="line">@NoArgsConstructor</span><br><span class="line">public class Worker&#123;</span><br><span class="line"></span><br><span class="line">	</span><br><span class="line">	@Field(&quot;workid&quot;)</span><br><span class="line">	private String workid;</span><br><span class="line">	</span><br><span class="line">	@Field(&quot;position&quot;)</span><br><span class="line">	private String position;</span><br><span class="line">	</span><br><span class="line">	@Field(&quot;salary&quot;)</span><br><span class="line">	private double salary;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Java连接Solr服务器"><a href="#Java连接Solr服务器" class="headerlink" title="Java连接Solr服务器"></a>Java连接Solr服务器</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">private final static String SOLR_URL = &quot;http://localhost:8983/solr/test_solr2&quot;;</span><br><span class="line">	</span><br><span class="line">HttpSolrClient solr = null;</span><br><span class="line"> </span><br><span class="line">@Before</span><br><span class="line">public void createSolrServer() &#123;</span><br><span class="line">    solr = new HttpSolrClient.Builder(SOLR_URL)</span><br><span class="line">    		.withConnectionTimeout(10000)</span><br><span class="line">    		.withSocketTimeout(60000)</span><br><span class="line">    		.build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="增删改查"><a href="#增删改查" class="headerlink" title="增删改查"></a>增删改查</h4><p>1、新增\修改数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void addDoc() throws SolrServerException, IOException &#123;</span><br><span class="line">    SolrInputDocument document = new SolrInputDocument();</span><br><span class="line">    document.addField(&quot;workid&quot;, &quot;20190730A82&quot;);</span><br><span class="line">    document.addField(&quot;position&quot;, &quot;前端工程师&quot;);</span><br><span class="line">    document.addField(&quot;salary&quot;, 8000);</span><br><span class="line">    solr.add(document);</span><br><span class="line">    solr.commit();</span><br><span class="line">    solr.close();</span><br><span class="line">    System.out.println(&quot;添加成功&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>2、删除数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void deleteDocById() throws SolrServerException, IOException &#123;</span><br><span class="line">    //server.deleteById(&quot;39b070b4-c1f6-4f2b-899c-b9f8916ebecc&quot;);</span><br><span class="line">	solr.deleteByQuery(&quot;id:*&quot;);</span><br><span class="line">	solr.commit();</span><br><span class="line">	solr.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>3、查询数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void querySolr() throws Exception &#123;</span><br><span class="line"></span><br><span class="line">    SolrQuery query = new SolrQuery();</span><br><span class="line"></span><br><span class="line">    //下面设置solr查询参数</span><br><span class="line"></span><br><span class="line">    //query.set(&quot;q&quot;, &quot;*:*&quot;);// 参数q  查询所有   </span><br><span class="line">    //query.set(&quot;q&quot;, &quot;position:*工程*&quot;);//模糊查询</span><br><span class="line"></span><br><span class="line">    //参数fq, 给query增加过滤查询条件 </span><br><span class="line">    //query.addFacetQuery(&quot;salary:[6000 TO 9000]&quot;);</span><br><span class="line">    //query.addFilterQuery(&quot;position:数据库*&quot;); //</span><br><span class="line"></span><br><span class="line">    //参数df,给query设置默认搜索域，从哪个字段上查找</span><br><span class="line">    query.set(&quot;df&quot;, &quot;position&quot;); </span><br><span class="line"></span><br><span class="line">    //参数sort,设置返回结果的排序规则</span><br><span class="line">    query.setSort(&quot;salary&quot;,SolrQuery.ORDER.desc);</span><br><span class="line"></span><br><span class="line">    //设置分页参数</span><br><span class="line">    query.setStart(0);</span><br><span class="line">    query.setRows(10);</span><br><span class="line"></span><br><span class="line">    //设置高亮显示以及结果的样式</span><br><span class="line">    query.setHighlight(true);</span><br><span class="line">    query.addHighlightField(&quot;salary&quot;);  </span><br><span class="line">    query.setHighlightSimplePre(&quot;&lt;font color=&apos;red&apos;&gt;&quot;);  </span><br><span class="line">    query.setHighlightSimplePost(&quot;&lt;/font&gt;&quot;); </span><br><span class="line"></span><br><span class="line">    //执行查询</span><br><span class="line">    QueryResponse response = solr.query(query);</span><br><span class="line"></span><br><span class="line">    //获取实体对象形式</span><br><span class="line">    List&lt;Worker&gt; worker = response.getBeans(Worker.class);</span><br><span class="line"></span><br><span class="line">    worker.stream().forEach(System.out::println);</span><br><span class="line">    </span><br><span class="line">    //获取返回结果</span><br><span class="line">    SolrDocumentList resultList = response.getResults();</span><br><span class="line">    </span><br><span class="line">    System.out.println(FastJsonUtils.toJSONString(resultList));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>基本查询方式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">q   查询的关键字，例如，q=id:1，默认为q=*:*，</span><br><span class="line">fl 	指定返回哪些字段，用逗号或空格分隔，注意：字段区分大小写，例如，fl= id,title,sort</span><br><span class="line">start 	返回结果的第几条记录开始，一般分页用，默认0开始</span><br><span class="line">rows 	指定返回结果最多有多少条记录，默认值为 10，配合start实现分页</span><br><span class="line">sort 	排序方式，例如id desc 表示按照 &quot;id&quot; 降序</span><br><span class="line">wt(writer type)		指定输出格式，有 xml, json, php等</span><br><span class="line">fq(filter query)	过虑查询，提供一个可选的筛选器查询。返回在q查询符合结果中同时符合的fq条件的查询结果，</span><br><span class="line">		例如：q=id:1&amp;fq=sort:[1 TO 5]，找关键字id为1 的，并且sort是1到5之间的。</span><br><span class="line">df 	默认的查询字段，一般默认指定。</span><br><span class="line">qt(query type)	指定那个类型来处理查询请求，一般不用指定，默认是standard。</span><br><span class="line">indent   返回的结果是否缩进，默认关闭，用 indent=true|on 开启，一般调试json,php,phps,ruby输出才有必要用这个参数。</span><br><span class="line">version  查询语法的版本，建议不使用它，由服务器指定默认值。</span><br></pre></td></tr></table></figure></p>
+<p>检索运算符<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">:	指定字段查指定值，如返回所有值*:*</span><br><span class="line">?	表示单个任意字符的通配</span><br><span class="line">*	表示多个任意字符的通配（不能在检索的项开始使用*或者?符号）</span><br><span class="line">~	表示模糊检索，如检索拼写类似于”roam”的项这样写：roam~将找到形如foam和roams的单词；roam~0.8，检索返回相似度在0.8以上的记录。</span><br><span class="line">AND、||、OR、&amp;&amp;  	  布尔操作符</span><br><span class="line">NOT、!、-	  排除操作符不能单独与项使用构成查询 </span><br><span class="line">+	存在操作符，要求符号”+”后的项必须在文档相应的域中存在</span><br><span class="line">( ) 	用于构成子查询</span><br><span class="line">[] 	包含范围检索，如检索某时间段记录，包含头尾，date:[201507 TO 201510]</span><br><span class="line">&#123;&#125; 	不包含范围检索，如检索某时间段记录，不包含头尾date:&#123;201507 TO 201510&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h3><p>在进行数据插入之前，一定要提前在managed-schema中定义索引字段、索引字段类型等等参数，不然使用默认类型的时候会出现不是自己想要的类型，然后出现不可预料的问题，建议自己提前定义好再进行数据插入。如果要进行分词搜索，可把相应字段定义<code>text_ik</code>分词类型(根据中英文或者自定义的分词名)。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/solr/" rel="tag"><i class="fa fa-tag"></i> solr</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/08/MyCat配置Mariadb的主从复制/" rel="next" title="MyCat配置Mariadb的主从复制。">
+                <i class="fa fa-chevron-left"></i> MyCat配置Mariadb的主从复制。
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/22/Redis的数据类型/" rel="prev" title="Redis的数据类型">
+                Redis的数据类型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">枫叶梨花</p>
+              <p class="site-description motion-element" itemprop="description">正在努力提高技术的小码农</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://juejin.im/user/5839013461ff4b007ec2d4c4/posts?sort=popular" title="枫叶梨花" target="_blank">枫叶梨花</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Solr安装"><span class="nav-number">1.</span> <span class="nav-text">Solr安装</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#下载"><span class="nav-number">1.1.</span> <span class="nav-text">下载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动"><span class="nav-number">1.2.</span> <span class="nav-text">启动</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置中文分词器"><span class="nav-number">1.3.</span> <span class="nav-text">配置中文分词器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建Core"><span class="nav-number">1.4.</span> <span class="nav-text">创建Core</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java操作Solr"><span class="nav-number">2.</span> <span class="nav-text">Java操作Solr</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#引入Jar包"><span class="nav-number">2.1.</span> <span class="nav-text">引入Jar包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义对象"><span class="nav-number">2.2.</span> <span class="nav-text">定义对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java连接Solr服务器"><span class="nav-number">2.3.</span> <span class="nav-text">Java连接Solr服务器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#增删改查"><span class="nav-number">2.4.</span> <span class="nav-text">增删改查</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注意点"><span class="nav-number">3.</span> <span class="nav-text">注意点</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">枫叶梨花</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">88.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+  <script type="text/javascript" src="/js/src/love.js"></script>
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
